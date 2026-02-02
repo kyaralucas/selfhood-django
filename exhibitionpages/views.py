@@ -51,13 +51,12 @@ def register(request):
                     obj.prompt_question = asked_question
                     obj.slot = slot
                     obj.save()
-
+                    request.session["last_registration_id"] = obj.pk
                     return redirect("register_thanks")
     else:
         form = RegistrationForm()
         asked_question = random.choice(QUESTIONS)
 
-    # helpful for UI (grey-out full slots)
     slots = TimeSlot.objects.order_by("time")
 
     return render(
@@ -71,4 +70,13 @@ def register(request):
     )
 
 def register_thanks(request):
-    return render(request, "exhibitionpages/register_thanks.html")
+    reg_id = request.session.get("last_registration_id")
+    reg = None
+    if reg_id:
+        reg = (
+            Registration.objects
+            .select_related("slot")
+            .filter(pk=reg_id)
+            .first()
+        )
+    return render(request, "exhibitionpages/register_thanks.html", {"reg": reg})

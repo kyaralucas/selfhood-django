@@ -39,7 +39,7 @@
   </audio>
 
   <button id="audioHelp" class="audio-help" type="button" hidden>
-    Tap to start sound
+    Tap to play soundscape
   </button>
 
   {# Safely serialize qas for JS #}
@@ -163,10 +163,6 @@ function renderQA(item) {
   aEl.innerHTML = (item.prompt_answer || "").replace(/\n/g, "<br>");
 }
 
-function pickRandomQA() {
-  return qas[Math.floor(Math.random() * qas.length)];
-}
-
 function playEnter() {
   qaWrap.classList.remove("is-entering", "is-exiting");
   // Force a reflow so the animation reliably restarts
@@ -180,15 +176,24 @@ function playExit() {
   qaWrap.classList.add("is-exiting");
 }
 
-function waitForAnimationEnd(el) {
+function waitForAnimationEnd(el, fallbackMs = 950) {
   return new Promise(resolve => {
-    const handler = () => {
-      el.removeEventListener("animationend", handler);
+    let done = false;
+
+    const finish = () => {
+      if (done) return;
+      done = true;
+      el.removeEventListener("animationend", finish);
       resolve();
     };
-    el.addEventListener("animationend", handler, { once: true });
+
+    el.addEventListener("animationend", finish, { once: true });
+
+    // Fallback: resolve even if animationend never fires
+    setTimeout(finish, fallbackMs);
   });
 }
+
 
 // first QA
 let current = pickRandomQA();
@@ -196,33 +201,36 @@ renderQA(current);
 playEnter();
 await waitForAnimationEnd(qaWrap);
 
+qaWrap.classList.remove("is-entering", "is-exiting");
+qaWrap.style.opacity = 1;
+qaWrap.classList.add("is-drifting");
+
 // Next button: fade out -> swap -> fade in
 nextBtn.addEventListener("click", async () => {
   if (!qas.length) return;
-
   nextBtn.disabled = true;
 
-  playExit();
-  await waitForAnimationEnd(qaWrap);
+  // ensure we have a transition
+  qaWrap.classList.add("is-fading");
+
+  // Fade out (keep drift running; no snapping)
+  qaWrap.style.opacity = 0;
+  await sleep(650);
 
   // swap content while hidden
   current = pickRandomQA();
   renderQA(current);
 
-  // small organic pause (optional)
+  // small organic pause
   await sleep(120);
 
-  playEnter();
-  await waitForAnimationEnd(qaWrap);
-
-  // leave it “resting” visible, not stuck in animation classes
-  qaWrap.classList.remove("is-entering", "is-exiting");
+  // Fade in
   qaWrap.style.opacity = 1;
+  await sleep(650);
 
   nextBtn.disabled = false;
 });
 
-    
 
   }
 

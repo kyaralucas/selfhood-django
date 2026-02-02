@@ -1,9 +1,73 @@
 {% extends "exhibitionpages/base.html" %}
-{% block title %}Thanks{% endblock %}
+{% load static %}
+{% block title %}Registered{% endblock %}
+
 {% block content %}
-<section class="thanks">
-  <h1>You’re registered.</h1>
-  <p>We can’t wait to see you.</p>
-  <p><a href="/">Back to home</a></p>
+<section class="reg-page">
+
+  <!-- Top row (same as register.html) -->
+  <div class="reg-top">
+    <div class="reg-kicker">SELFHOOD ACT II</div>
+
+    <div class="reg-top-center">
+      <img class="reg-mini-svg" src="{% static 'svg/ora_mi.svg' %}" alt="Ora mi">
+      <div class="reg-kicker reg-kicker--center">EXHIBITION BY AQUEENE WILSON</div>
+      <img class="reg-mini-svg" src="{% static 'svg/topa_mi_mes.svg' %}" alt="topa mi mes">
+    </div>
+
+    <div class="reg-kicker">20 FEB-5 APRIL</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="reg-hero">
+    <h1 class="reg-title">YOU’RE REGISTERED</h1>
+
+    <div class="reg-note">
+      We can’t wait to welcome you.
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="reg-card">
+    {% if reg %}
+      <div class="thanks-summary">
+        <div class="thanks-row">
+          <div class="thanks-label">Name</div>
+          <div class="thanks-value">{{ reg.name }}</div>
+        </div>
+
+        <div class="thanks-row">
+          <div class="thanks-label">Email</div>
+          <div class="thanks-value">{{ reg.email }}</div>
+        </div>
+
+        <div class="thanks-row">
+          <div class="thanks-label">Timeslot</div>
+          <div class="thanks-value">{{ reg.slot.time }}</div>
+        </div>
+
+        {% if reg.prompt_answer %}
+          <div class="thanks-row thanks-row--stack">
+            <div class="thanks-label">Prompt</div>
+            <div class="thanks-value">
+              <div class="thanks-prompt-q">{{ reg.prompt_question }}</div>
+              <div class="thanks-prompt-a">{{ reg.prompt_answer|linebreaksbr }}</div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="thanks-generic">
+        <p>Your registration has been received.</p>
+        <p>If you’d like to revisit the details, please register again.</p>
+      </div>
+    {% endif %}
+
+    <div class="thanks-actions">
+      <a class="reg-submit reg-submit--ghost" href="/">Home</a>
+      <a class="reg-submit" href="/rest/">Digital resting space</a>
+    </div>
+  </div>
+
 </section>
 {% endblock %}

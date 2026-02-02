@@ -740,15 +740,16 @@
   }
 
   /* Organic fade in/out for Q&A */
-@keyframes restFadeIn {
-    from { opacity: 0; transform: translateY(6px); filter: blur(1px); }
-    to   { opacity: 1; transform: translateY(0);  filter: blur(0); }
+  @keyframes restFadeIn {
+    from { transform: translateY(6px); }
+    to   { transform: translateY(0); }
   }
   
   @keyframes restFadeOut {
-    from { opacity: 1; transform: translateY(0);  filter: blur(0); }
-    to   { opacity: 0; transform: translateY(-4px); filter: blur(1px); }
+    from { transform: translateY(0); }
+    to   { transform: translateY(-4px); }
   }
+  
   
   .rest-qa.is-entering { animation: restFadeIn 900ms ease forwards; }
   .rest-qa.is-exiting  { animation: restFadeOut 650ms ease forwards; }
@@ -757,6 +758,40 @@
   @media (prefers-reduced-motion: reduce){
     .rest-qa.is-entering, .rest-qa.is-exiting { animation: none; }
   }
+
+  /* Gentle “breathing” hover/drift */
+@keyframes driftBreath {
+    0%   { transform: translate(0, 0); }
+    20%  { transform: translate(2px, -3px); }
+    45%  { transform: translate(-3px, -1px); }
+    70%  { transform: translate(2px, 3px); }
+    100% { transform: translate(0, 0); }
+  }
+  
+  /* Apply drift only when we mark it as resting */
+  .rest-qa.is-drifting{
+    animation: driftBreath 14s ease-in-out infinite;
+    will-change: transform;
+  }
+  
+  /* Don’t drift while entering/exiting (prevents weird combos) */
+  .rest-qa.is-entering,
+  .rest-qa.is-exiting{
+    animation: none !important;
+  }
+  
+  /* Soft fade used when changing QAs */
+.rest-qa.is-fading {
+    transition: opacity 650ms ease;
+  }
+  
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce){
+    .rest-qa.is-drifting{ animation: none; }
+  }
+
+  
   
   /* SECTION: Registration page */
   /* Register page base */
@@ -827,7 +862,7 @@
   }
   
   .reg-meta{
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     line-height: 1.45;
@@ -835,7 +870,7 @@
   }
   
   .reg-note{
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.4;
     opacity: 0.85;
     width: min(520px, 100%);
@@ -856,9 +891,23 @@
   
   .reg-tab{
     display: inline-flex;
+    flex-direction: column;     /* dot above label */
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    opacity: 0.7;
   }
+  
+  .reg-tab__label{
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+  }
+  
+  .reg-tab.is-active{
+    opacity: 1;
+    font-weight: 700;
+  }
+  
   
   .reg-dot{
     width: 8px;
@@ -1005,4 +1054,97 @@
   
   .reg-submit:hover{ filter: brightness(1.03); }
   .reg-submit:active{ transform: translateY(1px); }
+
+  .reg-actions{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  
+  /* A lighter “Back” button */
+  .reg-submit--ghost{
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.55);
+    color: rgba(0,0,0,0.92);
+  }
+  
+  /* Optional: highlight active tab */
+  .reg-tab.is-active{
+    opacity: 1;
+    font-weight: 700;
+  }
+  .reg-tab{ opacity: 0.7; }
+  
+  /* SECTION: Thank you page after registration */
+  /* Thanks page summary layout */
+.thanks-summary{
+    display: grid;
+    gap: 12px;
+  }
+  
+  .thanks-row{
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,0.22);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.20);
+  }
+  
+  @media (max-width: 520px){
+    .thanks-row{
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  
+  .thanks-label{
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  
+  .thanks-value{
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  
+  .thanks-row--stack .thanks-value{
+    display: grid;
+    gap: 8px;
+  }
+  
+  .thanks-prompt-q{
+    font-style: italic;
+    opacity: 0.9;
+  }
+  
+  .thanks-prompt-a{
+    opacity: 0.95;
+  }
+  
+  .thanks-actions{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+  }
+  
+  @media (max-width: 520px){
+    .thanks-actions{ grid-template-columns: 1fr; }
+  }
+  
+  /* generic fallback */
+  .thanks-generic{
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0.9;
+    padding: 10px 6px;
+  }
+  
   

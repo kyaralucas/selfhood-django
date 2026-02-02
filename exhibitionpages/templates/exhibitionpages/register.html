@@ -34,82 +34,157 @@
 
   <!-- Tabs-ish labels -->
   <div class="reg-tabs">
-    <div class="reg-tab"><span class="reg-dot"></span> details</div>
-    <div class="reg-tab"><span class="reg-dot"></span> timeslot</div>
+    <div class="reg-tab">
+        <span class="reg-dot"></span>
+        <span class="reg-tab__label">details</span>
+      </div>
+      
+      <div class="reg-tab">
+        <span class="reg-dot"></span>
+        <span class="reg-tab__label">timeslot</span>
+      </div>
+      
   </div>
 
   <!-- Main card -->
   <div class="reg-card">
-    <form method="post" class="reg-form">
-      {% csrf_token %}
 
-      <!-- Details -->
-      <div class="reg-section">
-        <div class="reg-field">
-          <label class="reg-label">Name</label>
-          {{ form.name }}
+
+    <form method="post" class="reg-form" id="regForm">
+        {% csrf_token %}
+      
+        <!-- Step indicators (optional, ties to your dots) -->
+        <input type="hidden" id="regStep" name="reg_step" value="1" />
+      
+        <!-- STEP 1: DETAILS -->
+        <div class="reg-step" id="stepDetails" data-step="1">
+          <div class="reg-section">
+            <div class="reg-field">
+              <label class="reg-label">Name</label>
+              {{ form.name }}
+            </div>
+      
+            <div class="reg-field">
+              <label class="reg-label">Email</label>
+              {{ form.email }}
+            </div>
+          </div>
+      
+          <div class="reg-section">
+            <div class="reg-subtitle"></div>
+      
+            <div class="reg-prompt">
+              <div class="reg-prompt__q"></div>
+              <input type="hidden" name="asked_question" value="{{ asked_question|escape }}">
+              <label class="reg-label">(OPTIONAL) {{ asked_question }}</label>
+              <!-- <label class="reg-label">{{ form.prompt_answer.label }}</label> -->
+              {{ form.prompt_answer }}
+              <!-- <div class="reg-hint">You can leave this blank.</div> -->
+            </div>
+          </div>
+      
+          <button class="reg-submit" id="nextBtn" type="button">Next</button>
         </div>
-
-        <div class="reg-field">
-          <label class="reg-label">Email</label>
-          {{ form.email }}
+      
+        <!-- STEP 2: TIMESLOT -->
+        <div class="reg-step" id="stepSlot" data-step="2" hidden>
+          <div class="reg-section">
+            <div class="reg-subtitle">Choose a time slot</div>
+      
+            {% if form.errors.slot %}
+              <div class="reg-error">{{ form.errors.slot }}</div>
+            {% endif %}
+      
+            <div class="reg-slots">
+              {% for slot in slots %}
+                {% with is_full=slot.is_full %}
+                <label class="reg-slot {% if is_full %}reg-slot--disabled{% endif %}">
+                  <input
+                    class="reg-slot__input"
+                    type="radio"
+                    name="slot"
+                    value="{{ slot.id }}"
+                    {% if is_full %}disabled{% endif %}
+                    {% if form.data.slot == slot.id|stringformat:"s" %}checked{% endif %}
+                  />
+                  <span class="reg-slot__time">{{ slot.time }}</span>
+                  <span class="reg-slot__meta">{% if is_full %}Full{% endif %}</span>
+                </label>
+                {% endwith %}
+              {% endfor %}
+            </div>
+          </div>
+      
+          <div class="reg-actions">
+            <button class="reg-submit reg-submit--ghost" id="backBtn" type="button">Back</button>
+            <button class="reg-submit" type="submit">Register</button>
+          </div>
         </div>
+      </form>
+      
 
-        <!-- <div class="reg-field">
-          <label class="reg-label">Guests (optional)</label>
-          {{ form.guests }}
-        </div> -->
-      </div>
-
-      <!-- Timeslots -->
-      <div class="reg-section">
-        <div class="reg-subtitle">Choose a time slot</div>
-
-        {% if form.errors.slot %}
-          <div class="reg-error">{{ form.errors.slot }}</div>
-        {% endif %}
-
-        <div class="reg-slots">
-          {% for slot in slots %}
-            {% with is_full=slot.is_full %}
-            <label class="reg-slot {% if is_full %}reg-slot--disabled{% endif %}">
-              <input
-                class="reg-slot__input"
-                type="radio"
-                name="slot"
-                value="{{ slot.id }}"
-                {% if is_full %}disabled{% endif %}
-                {% if form.data.slot == slot.id|stringformat:"s" %}checked{% endif %}
-              />
-              <span class="reg-slot__time">{{ slot.time }}</span>
-              <span class="reg-slot__meta">
-                {% if is_full %}
-                  Full
-                
-                {% endif %}
-              </span>
-            </label>
-            {% endwith %}
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- Optional question -->
-      <div class="reg-section">
-        <div class="reg-subtitle">Optional</div>
-
-        <div class="reg-prompt">
-          <div class="reg-prompt__q">{{ asked_question }}</div>
-          <input type="hidden" name="asked_question" value="{{ asked_question|escape }}">
-          <label class="reg-label">{{ form.prompt_answer.label }}</label>
-          {{ form.prompt_answer }}
-          <div class="reg-hint">You can leave this blank.</div>
-        </div>
-      </div>
-
-      <button class="reg-submit" type="submit">Register</button>
-    </form>
   </div>
 
 </section>
+
+<script>
+    const stepDetails = document.getElementById("stepDetails");
+    const stepSlot = document.getElementById("stepSlot");
+    const nextBtn = document.getElementById("nextBtn");
+    const backBtn = document.getElementById("backBtn");
+    const stepInput = document.getElementById("regStep");
+  
+    // These IDs are usually "id_name" / "id_email" for Django forms
+    const nameInput = document.getElementById("id_name");
+    const emailInput = document.getElementById("id_email");
+  
+    function showStep(n){
+      if (n === 1){
+        stepDetails.hidden = false;
+        stepSlot.hidden = true;
+        stepInput.value = "1";
+        // optional: scroll to top of card
+        stepDetails.scrollIntoView({behavior:"smooth", block:"start"});
+      } else {
+        stepDetails.hidden = true;
+        stepSlot.hidden = false;
+        stepInput.value = "2";
+        stepSlot.scrollIntoView({behavior:"smooth", block:"start"});
+      }
+  
+      // update the dots (if you want)
+      document.querySelectorAll(".reg-tab").forEach((el, idx) => {
+        el.classList.toggle("is-active", (idx + 1) === n);
+      });
+    }
+  
+    function basicValidateDetails(){
+      const nameOk = nameInput && nameInput.value.trim().length > 0;
+      const emailOk = emailInput && emailInput.value.trim().length > 0;
+      return nameOk && emailOk;
+    }
+  
+    nextBtn.addEventListener("click", () => {
+      if (!basicValidateDetails()){
+        // super simple feedback (no fancy UI)
+        alert("Please fill in your name and email first.");
+        return;
+      }
+      showStep(2);
+    });
+  
+    backBtn.addEventListener("click", () => showStep(1));
+  
+    // If the server returned slot errors OR user had already selected a slot,
+    // jump to step 2 on page load.
+    const hasSlotError = document.querySelector(".reg-error") !== null;
+    const hasSlotSelected = document.querySelector('input[name="slot"]:checked') !== null;
+  
+    if (hasSlotError || hasSlotSelected){
+      showStep(2);
+    } else {
+      showStep(1);
+    }
+  </script>
+  
 {% endblock %}
