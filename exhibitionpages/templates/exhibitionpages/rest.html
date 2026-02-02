@@ -1,0 +1,231 @@
+{% extends "exhibitionpages/base.html" %}
+{% load static %}
+{% block title %}Digital Resting Space{% endblock %}
+
+{% block content %}
+<section class="rest-page">
+  <style>
+    :root{
+      --rest-bg-mobile: url("{% static 'img/blurred_background_mobile.png' %}");
+      --rest-bg-desktop: url("{% static 'img/blurred_background.png' %}");
+    }
+  </style>
+
+  <!-- top row (like screenshot) -->
+  <div class="rest-top">
+    <div class="rest-kicker rest-kicker--left">SELFHOOD <br class="mobile-only">  ACT II</div>
+    <div class="rest-kicker rest-kicker--right" style="text-align: right;">EXHIBITION BY <br class="mobile-only">  AQUEENE WILSON</div>
+  </div>
+
+  <!-- center content -->
+  <div class="rest-center">
+    <div id="restMessage" class="rest-message" aria-live="polite"></div>
+
+    <div id="restQA" class="rest-qa" hidden>
+      <div class="rest-qa__q" id="qaQ"></div>
+      <div class="rest-qa__a" id="qaA"></div>
+
+      <button class="rest-next" id="nextBtn" type="button">next</button>
+    </div>
+
+    <div id="restEmpty" class="rest-empty" hidden>
+      No shared answers yet — check back soon.
+    </div>
+  </div>
+
+  <!-- audio (hidden controls; we’ll show a small helper if autoplay is blocked) -->
+  <audio id="restAudio" autoplay loop preload="auto">
+    <source src="{% static 'audio/audio.mp3' %}" type="audio/mpeg">
+  </audio>
+
+  <button id="audioHelp" class="audio-help" type="button" hidden>
+    Tap to start sound
+  </button>
+
+  {# Safely serialize qas for JS #}
+  {{ qas|json_script:"qas-data" }}
+</section>
+
+<script>
+  // ---------- helpers ----------
+  const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+  function setFadeText(el, text, {fadeInMs=1200, holdMs=8000, fadeOutMs=1200} = {}) {
+    // Returns a promise that resolves after fade-out is complete
+    return new Promise(async (resolve) => {
+      el.style.transition = `opacity ${fadeInMs}ms ease`;
+      el.style.opacity = 0;
+      el.textContent = text;
+
+      // trigger fade in
+      requestAnimationFrame(() => {
+        el.style.opacity = 1;
+      });
+
+      await sleep(fadeInMs + holdMs);
+
+      // fade out
+      el.style.transition = `opacity ${fadeOutMs}ms ease`;
+      el.style.opacity = 0;
+
+      await sleep(fadeOutMs);
+      resolve();
+    });
+  }
+
+  function fadeIn(el, ms=800) {
+    el.style.transition = `opacity ${ms}ms ease`;
+    el.style.opacity = 0;
+    el.hidden = false;
+    requestAnimationFrame(() => el.style.opacity = 1);
+  }
+
+  function fadeSwap(el, setContentFn, ms=800) {
+    // fade out -> swap content -> fade in
+    return new Promise(async (resolve) => {
+      el.style.transition = `opacity ${ms}ms ease`;
+      el.style.opacity = 0;
+      await sleep(ms);
+      setContentFn();
+      requestAnimationFrame(() => {
+        el.style.opacity = 1;
+        resolve();
+      });
+    });
+  }
+
+  // ---------- audio autoplay handling ----------
+  const audio = document.getElementById("restAudio");
+  const audioHelp = document.getElementById("audioHelp");
+
+  async function tryPlayAudio() {
+    try {
+      await audio.play();
+      audioHelp.hidden = true;
+    } catch (e) {
+      // Autoplay blocked; show a small helper button
+      audioHelp.hidden = false;
+    }
+  }
+
+  audioHelp.addEventListener("click", async () => {
+    await tryPlayAudio();
+  });
+
+  // ---------- content sequencing ----------
+  const msgEl = document.getElementById("restMessage");
+  const qaWrap = document.getElementById("restQA");
+  const emptyEl = document.getElementById("restEmpty");
+  const qEl = document.getElementById("qaQ");
+  const aEl = document.getElementById("qaA");
+  const nextBtn = document.getElementById("nextBtn");
+
+  const qas = JSON.parse(document.getElementById("qas-data").textContent || "[]")
+    .filter(x => (x.prompt_answer || "").trim().length > 0);
+
+  function pickRandomQA() {
+    return qas[Math.floor(Math.random() * qas.length)];
+  }
+
+  async function startSequence() {
+    await tryPlayAudio();
+
+    // 1) Welcome message: fade in, hold 8s, fade out
+    await setFadeText(
+      msgEl,
+      "Welcome to the digital resting space of Ora mi topa mi mes.\nA space to reflect and dream about a more rested selfhood.",
+      { fadeInMs: 1400, holdMs: 8000, fadeOutMs: 1400 }
+    );
+
+    // 2) Stay message: fade in and remain briefly
+    msgEl.style.transition = "opacity 1200ms ease";
+    msgEl.textContent = "Stay as long as you like.";
+    requestAnimationFrame(() => { msgEl.style.opacity = 1; });
+
+    await sleep(2500);
+
+    // Then fade it out and move to Q&A
+    msgEl.style.opacity = 0;
+    await sleep(900);
+
+    // 3) Show Q&A
+if (!qas.length) {
+  emptyEl.hidden = false;
+  fadeIn(emptyEl, 900);
+  return;
+}
+
+qaWrap.hidden = false;
+qaWrap.style.opacity = 0; // IMPORTANT: prevent flash before first animation
+
+function renderQA(item) {
+  qEl.textContent = item.prompt_question || "";
+  aEl.innerHTML = (item.prompt_answer || "").replace(/\n/g, "<br>");
+}
+
+function pickRandomQA() {
+  return qas[Math.floor(Math.random() * qas.length)];
+}
+
+function playEnter() {
+  qaWrap.classList.remove("is-entering", "is-exiting");
+  // Force a reflow so the animation reliably restarts
+  void qaWrap.offsetWidth;
+  qaWrap.classList.add("is-entering");
+}
+
+function playExit() {
+  qaWrap.classList.remove("is-entering", "is-exiting");
+  void qaWrap.offsetWidth;
+  qaWrap.classList.add("is-exiting");
+}
+
+function waitForAnimationEnd(el) {
+  return new Promise(resolve => {
+    const handler = () => {
+      el.removeEventListener("animationend", handler);
+      resolve();
+    };
+    el.addEventListener("animationend", handler, { once: true });
+  });
+}
+
+// first QA
+let current = pickRandomQA();
+renderQA(current);
+playEnter();
+await waitForAnimationEnd(qaWrap);
+
+// Next button: fade out -> swap -> fade in
+nextBtn.addEventListener("click", async () => {
+  if (!qas.length) return;
+
+  nextBtn.disabled = true;
+
+  playExit();
+  await waitForAnimationEnd(qaWrap);
+
+  // swap content while hidden
+  current = pickRandomQA();
+  renderQA(current);
+
+  // small organic pause (optional)
+  await sleep(120);
+
+  playEnter();
+  await waitForAnimationEnd(qaWrap);
+
+  // leave it “resting” visible, not stuck in animation classes
+  qaWrap.classList.remove("is-entering", "is-exiting");
+  qaWrap.style.opacity = 1;
+
+  nextBtn.disabled = false;
+});
+
+    
+
+  }
+
+  startSequence();
+</script>
+{% endblock %}

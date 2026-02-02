@@ -1,0 +1,115 @@
+{% extends "exhibitionpages/base.html" %}
+{% load static %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<section class="reg-page">
+
+  <!-- Top row -->
+  <div class="reg-top">
+    <div class="reg-kicker">SELFHOOD ACT II</div>
+
+    <div class="reg-top-center">
+      <img class="reg-mini-svg reg-mini-svg--ora" src="{% static 'svg/ora_mi.svg' %}" alt="Ora mi">
+      <div class="reg-kicker reg-kicker--center">EXHIBITION BY AQUEENE WILSON</div>
+      <img class="reg-mini-svg reg-mini-svg--topa" src="{% static 'svg/topa_mi_mes.svg' %}" alt="topa mi mes">
+    </div>
+
+    <div class="reg-kicker">20 FEB-5 APRIL</div>
+  </div>
+
+  <!-- Title + meta -->
+  <div class="reg-hero">
+    <h1 class="reg-title">EXHIBITION OPENING</h1>
+
+    <div class="reg-meta">
+      <div class="reg-meta__date">20 FEBRUARY 2026 · 19:00 - 21:00</div>
+      <div class="reg-meta__loc"><em>NOS SENTRO · ST. ROSAWEG 13 · WILLEMSTAD, CURAÇAO</em></div>
+    </div>
+
+    <div class="reg-note">
+      Registration is free. Limited capacity per timeslot to keep <br> the experience soft and unrushed.
+    </div>
+  </div>
+
+  <!-- Tabs-ish labels -->
+  <div class="reg-tabs">
+    <div class="reg-tab"><span class="reg-dot"></span> details</div>
+    <div class="reg-tab"><span class="reg-dot"></span> timeslot</div>
+  </div>
+
+  <!-- Main card -->
+  <div class="reg-card">
+    <form method="post" class="reg-form">
+      {% csrf_token %}
+
+      <!-- Details -->
+      <div class="reg-section">
+        <div class="reg-field">
+          <label class="reg-label">Name</label>
+          {{ form.name }}
+        </div>
+
+        <div class="reg-field">
+          <label class="reg-label">Email</label>
+          {{ form.email }}
+        </div>
+
+        <!-- <div class="reg-field">
+          <label class="reg-label">Guests (optional)</label>
+          {{ form.guests }}
+        </div> -->
+      </div>
+
+      <!-- Timeslots -->
+      <div class="reg-section">
+        <div class="reg-subtitle">Choose a time slot</div>
+
+        {% if form.errors.slot %}
+          <div class="reg-error">{{ form.errors.slot }}</div>
+        {% endif %}
+
+        <div class="reg-slots">
+          {% for slot in slots %}
+            {% with is_full=slot.is_full %}
+            <label class="reg-slot {% if is_full %}reg-slot--disabled{% endif %}">
+              <input
+                class="reg-slot__input"
+                type="radio"
+                name="slot"
+                value="{{ slot.id }}"
+                {% if is_full %}disabled{% endif %}
+                {% if form.data.slot == slot.id|stringformat:"s" %}checked{% endif %}
+              />
+              <span class="reg-slot__time">{{ slot.time }}</span>
+              <span class="reg-slot__meta">
+                {% if is_full %}
+                  Full
+                
+                {% endif %}
+              </span>
+            </label>
+            {% endwith %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Optional question -->
+      <div class="reg-section">
+        <div class="reg-subtitle">Optional</div>
+
+        <div class="reg-prompt">
+          <div class="reg-prompt__q">{{ asked_question }}</div>
+          <input type="hidden" name="asked_question" value="{{ asked_question|escape }}">
+          <label class="reg-label">{{ form.prompt_answer.label }}</label>
+          {{ form.prompt_answer }}
+          <div class="reg-hint">You can leave this blank.</div>
+        </div>
+      </div>
+
+      <button class="reg-submit" type="submit">Register</button>
+    </form>
+  </div>
+
+</section>
+{% endblock %}

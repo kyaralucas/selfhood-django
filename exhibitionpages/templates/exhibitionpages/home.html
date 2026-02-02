@@ -1,0 +1,202 @@
+{% extends "exhibitionpages/base.html" %}
+{% block title %}SELFHOOD · Ora mi topa mi mes{% endblock %}
+{% block content %}
+
+{% load static %}
+
+<header class="hero hero--home">
+  <!-- Top row -->
+  <div class="hero__top">
+    <div class="hero__kicker hero__kicker--left">SELFHOOD <br class="mobile-only"> ACT II</div>
+
+    <!-- Desktop-only (center) -->
+    <div class="hero__kicker hero__kicker--center">EXHIBITION BY AQUEENE WILSON</div>
+
+    <div class="hero__kicker hero__kicker--right">20 FEB - 5 <br class="mobile-only"> APRIL</div>
+  </div>
+
+  <!-- Title SVG overlays -->
+  <div class="hero__title">
+    <img class="hero__title-svg hero__title-svg--ora" src="{% static 'svg/ora_mi.svg' %}" alt="Ora mi">
+    <img class="hero__title-svg hero__title-svg--topa" src="{% static 'svg/topa_mi_mes.svg' %}" alt="topa mi mes">
+  </div>
+
+  <!-- Mobile bottom text -->
+  <div class="hero__bottom">
+    <div class="hero__kicker hero__kicker--bottom">EXHIBITION BY AQUEENE WILSON</div>
+  </div>
+</header>
+
+<section class="opening">
+  <style>
+    :root{
+      --opening-bg-mobile: url("{% static 'img/blurred_background_mobile.png' %}");
+      --opening-bg-desktop: url("{% static 'img/blurred_background.png' %}");
+    }
+  </style>
+
+  <div class="opening__inner">
+    <h2 class="opening__title">JOIN US FOR THE OPENING!</h2>
+
+    <div class="opening__meta">
+      <div class="opening__date"><em>20 FEBRUARY 2026 • 19:00 - 21:00</em></div>
+      <div class="opening__loc"><em>NOS SENTRO • ST. ROSAWEG 13 • WILLEMSTAD, CURAÇAO</em></div>
+    </div>
+
+    <a class="btn btn--pill" href="/register/">REGISTER HERE!</a>
+
+    <div class="opening__body">
+      <p>
+        We are super excited to welcome you to <em>Ora mi topa mi mes</em>, an exhibition 
+        catered to rest and Afro-Caribbean womanhood.  To ensure that you have an intentional, 
+        dreamy and unrushed experience, we are welcoming guests in dedicated time slots. 
+        Please <strong>choose a timeslot</strong> and <strong>arrive on time</strong> so the space stays gentle, spacious, and attentive. 
+        Timeslots run between 19:00 and 21:00h. 
+      </p>
+
+      <p>
+        After your visit, you're more than welcome to stay. 
+        Drinks and snacks are available in the adjacent room, and you can chèlèlè there till the very end. 
+        The timed entry only applies to the exhibition space itself.
+      </p>
+    </div>
+
+    <h3 class="opening__directions">DIRECTIONS</h3>
+
+    <div class="map-card">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d243.8040599267158!2d-68.89941760127924!3d12.121390907278244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e837dc3a4f60601%3A0xd0641c025959c0f2!2sNos%20Sentro%20-%20Our%20Center%20LGBTQ%2B%20Community%20Education%20%26%20Information%20Center!5e0!3m2!1sen!2snl!4v1769547747018!5m2!1sen!2snl"
+        width="400"
+        height="300"
+        style="border:0;"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Directions to the exhibition">
+      </iframe>
+    </div>
+
+    <p class="opening__note">
+        <em>
+            Registration is free. Limited capacity per timeslot to keep the experience soft and unrushed.
+        </em>
+    </p>
+  </div>
+</section>
+{% load static %}
+
+<section class="resting-cta">
+  <style>
+    :root{
+      --rest-bg-mobile: url("{% static 'img/blurred_background_mobile.png' %}");
+      --rest-bg-desktop: url("{% static 'img/blurred_background.png' %}");
+    }
+  </style>
+
+  <div class="resting-cta__inner">
+    <h2 class="resting-cta__title">DIGITAL RESTING SPACE</h2>
+
+    <p class="resting-cta__text">
+      Before (or after) registering for the opening, step into our digital resting space.
+      You'll be guided by a gentle soundscape with ease, softness, and a few words to hold.
+    </p>
+
+    <div class="resting-cta__actions">
+      <a class="btn btn--pill btn--outline" href="/rest/">GO TO RESTING SPACE</a>
+      <a class="btn btn--pill btn--filled" href="/register/">REGISTER</a>
+    </div>
+  </div>
+</section>
+
+{% load static %}
+
+<section class="about">
+  <div class="about__inner">
+
+    <!-- Left: SVG title (desktop), moves to top on mobile -->
+    <div class="about__title">
+        <img
+          class="about__svg about__svg--combined"
+          src="{% static 'svg/ora_mi_topa_mi_mes_black.svg' %}"
+          alt="Ora mi topa mi mes"
+        >
+      </div>
+      
+
+    <!-- Right: text blocks -->
+    <div class="about__content">
+      <article class="about__block">
+        <h3 class="about__heading">ABOUT THE EXHIBITION</h3>
+        <p>
+          <em>Ora mi topa mi mes</em> is an invitation to slow down and a quest for Afro-Caribbean women 
+          to return to (their) nature. Rather than tying their identities to hardship, the series fosters Caribbean 
+          restoration and explores the ways in which Afro-Caribbean women can reclaim their selfhood.
+        </p>
+        <p>
+            This  exhibition  by <b>Aqueene Wilson</b> is funded by Cultuurfonds Caribisch gebied + DNB Fonds and is part of her 
+            ongoing audio-visual series titled; SELFHOOD. SELFHOOD debuted in the Netherlands and is now set to release its second
+             dreaming act on Curaçao in the form of an exhibition. This new body of work  centers rest, Afro-Caribbean restoration
+             and womanhood through photography  with a sonic contribution by <b<u>WATRA</u></b>. 
+        </p>
+      </article>
+
+      <article class="about__block">
+        <h3 class="about__heading">ABOUT THE ARTIST</h3>
+        <p>
+            Aqueene Wilson is a Surinamese-Curaçaoan artist, self-taught photographer and  Caribbean visionary 
+            dedicated to the visibility and liberation of Black and Brown folks. Her work introduces restorative possibilities for existing, 
+            in which softness, vulnerability, reflection and rest take center in her (reimagined) representation of Black life.  
+        </p>
+      </article>
+
+      <article class="about__block">
+        <h3 class="about__heading">MORE ABOUT SELFHOOD</h3>
+        <p>
+            SELFHOOD is an audio-visual series that prioritizes the durability of Black womanhood. It commits to a well-rested 
+            future and raises the fundamental question of when and how Black women get to be human. The artist proposes rest as the answer, 
+            as it is only through rest that Black women get to breathe, dream, and care for themselves in a world where they are intersectionaly racialized, 
+            sexualized, stereotyped and overworked. 
+        </p>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+{% load static %}
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+
+    <div class="site-footer__col site-footer__col--left">
+      <p>20 Feb - 5 April<br>Every Fri, Sat &amp; Sun</p>
+
+      <p>Nos Sentro<br>St. Rosaweg 13, Curacao</p>
+    </div>
+
+    <div class="site-footer__col site-footer__col--center"> 
+      <!-- <div class="site-footer__arc">
+        <div class="site-footer__arc-text">EXHIBITION BY AQUEENE WILSON</div>
+      </div>
+
+      <div class="site-footer__title">Ora mi<br>topa mi mes</div>
+
+      <img class="site-footer__logo" src="{% static 'svg/footer_logo.svg' %}" alt="Footer logo"> -->
+    </div> 
+
+    <div class="site-footer__col site-footer__col--right">
+      <p>Want to come with a group?<br>Or during the week?</p>
+
+      <p>Simply reach out!<br>
+        <a class="site-footer__link" href="mailto:aqueenewilson@gmail.com">aqueenewilson@gmail.com</a>
+      </p>
+    </div>
+
+  </div>
+</footer>
+
+
+
+
+
+{% endblock %}
