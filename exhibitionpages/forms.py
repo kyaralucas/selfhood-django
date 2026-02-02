@@ -5,7 +5,7 @@ class RegistrationForm(forms.ModelForm):
     prompt_answer = forms.CharField(
         required=False,
         label="(Optional) Your answer",
-        widget=forms.Textarea(attrs={"rows": 3, "placeholder": "If you'd like…"})
+        widget=forms.Textarea(attrs={"rows": 3, "placeholder": "(Optional) Answer with one word or a short phrase. Will be added anonymously to digital resting space."})
     )
 
     slot = forms.ModelChoiceField(
