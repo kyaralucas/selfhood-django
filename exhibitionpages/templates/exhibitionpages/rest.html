@@ -65,6 +65,31 @@
   // ---------- helpers ----------
   const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
+  function waitForTransitionEnd(el, prop = "opacity", fallbackMs = 900) {
+  return new Promise(resolve => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      el.removeEventListener("transitionend", onEnd);
+      resolve();
+    };
+
+    const onEnd = (e) => {
+      if (!e || e.propertyName === prop) finish();
+    };
+
+    el.addEventListener("transitionend", onEnd);
+    setTimeout(finish, fallbackMs);
+  });
+}
+
+function forceRepaint(el) {
+  // forces WebKit to flush styles
+  void el.offsetHeight;
+}
+
+
   function setFadeText(el, text, {fadeInMs=1200, holdMs=8000, fadeOutMs=1200} = {}) {
     // Returns a promise that resolves after fade-out is complete
     return new Promise(async (resolve) => {
@@ -163,6 +188,8 @@
     msgEl.style.opacity = 0;
     await sleep(900);
 
+    msgEl.textContent = "";
+
     // 3) Show Q&A
 if (!qas.length) {
   emptyEl.hidden = false;
@@ -225,26 +252,31 @@ nextBtn.addEventListener("click", async () => {
   if (!qas.length) return;
   nextBtn.disabled = true;
 
-  // ensure we have a transition
+  // Make sure opacity transitions are enabled
   qaWrap.classList.add("is-fading");
 
-  // Fade out (keep drift running; no snapping)
+  // Fade out
   qaWrap.style.opacity = 0;
-  await sleep(650);
+  await waitForTransitionEnd(qaWrap, "opacity", 900);
 
-  // swap content while hidden
+  // HARD hide during swap to prevent “ghost” layering on iOS
+  qaWrap.style.visibility = "hidden";
+
+  // swap content
   current = pickRandomQA();
   renderQA(current);
 
-  // small organic pause
-  await sleep(120);
+  // Force repaint before showing again
+  forceRepaint(qaWrap);
 
-  // Fade in
+  // Show + fade in
+  qaWrap.style.visibility = "visible";
   qaWrap.style.opacity = 1;
-  await sleep(650);
+  await waitForTransitionEnd(qaWrap, "opacity", 900);
 
   nextBtn.disabled = false;
 });
+
 
 
   }

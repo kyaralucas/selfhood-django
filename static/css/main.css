@@ -707,7 +707,13 @@
       
         background: rgba(0, 0, 0, 0.12);           /* optional */
         backdrop-filter: blur(2px);                 /* optional, remove if you don’t want */
-      }
+    
+        backface-visibility: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
+
+
+      
       
   
   .rest-qa__q{
