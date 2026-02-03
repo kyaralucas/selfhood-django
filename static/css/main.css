@@ -266,6 +266,12 @@
   .opening__body p{
     margin: 0 0 12px;
   }
+
+  .opening__body strong{
+    font-weight: 700;
+    color: #D1D02F;
+    letter-spacing: 0.01em;
+  }
   
   .opening__directions{
     margin: 32px 0 12px;
@@ -615,6 +621,9 @@
     width: 100%;
     position: relative;
     padding: 18px;
+
+    display: flex;
+    flex-direction: column;
   
     background-image: var(--rest-bg-mobile);
     background-size: cover;
@@ -624,6 +633,13 @@
     color: var(--accent);
     font-family: "Open Sauce", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   }
+  
+
+  
+
+  
+  
+
   
   @media (min-width: 900px){
     .rest-page{
@@ -650,6 +666,7 @@
   /* centered text area */
   .rest-center{
     min-height: calc(100vh - 60px);
+    flex: 1;
     display: flex;
     flex-direction: column;   /* stacks message and QAs */
     align-items: center;      /* horizontal centering */
@@ -675,15 +692,23 @@
     .rest-message,
     .rest-qa,
     .rest-empty{
-    width: min(620px, 92%);
+    width: min(420px, 75%);
     margin: 0 auto;
     }
     
-  .rest-qa{
-    width: min(620px, 92%);
-    text-align: center;
-    opacity: 0;
-  }
+    .rest-qa{
+        width: min(420px, 75%);
+        text-align: center;
+        opacity: 0;
+      
+        border: 1px solid rgba(209, 208, 47, 0.55); /* accent-ish border */
+        border-radius: 18px;
+        padding: 18px 16px;
+      
+        background: rgba(0, 0, 0, 0.12);           /* optional */
+        backdrop-filter: blur(2px);                 /* optional, remove if you don’t want */
+      }
+      
   
   .rest-qa__q{
     font-size: 12px;
@@ -790,6 +815,28 @@
   @media (prefers-reduced-motion: reduce){
     .rest-qa.is-drifting{ animation: none; }
   }
+
+  .rest-footer{
+    padding: 12px 18px 16px;
+    text-align: center;
+    background: var(--accent);
+    color: #0f0f0f;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  
+  .rest-footer__inner{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap; /* mobile friendly */
+  }
+  
+  .rest-footer__sep{
+    opacity: 0.6;
+  }
+  
 
   
   
@@ -965,10 +1012,20 @@
     font-family: inherit;
     font-size: 14px;
   }
+
+  .reg-field input::placeholder,
+.reg-field textarea::placeholder,
+.reg-prompt input::placeholder,
+.reg-prompt textarea::placeholder{
+  color: rgba(15,15,15,0.65);
+  opacity: 1;
+}
+
   
   .reg-field textarea,
   .reg-prompt textarea{
     resize: vertical;
+    
   }
   
   /* Subtitle lines */
