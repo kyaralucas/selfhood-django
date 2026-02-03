@@ -871,21 +871,33 @@
     color: rgba(0,0,0,0.85);
   }
   
-  .reg-top-center{
-    display: none; /* hide on mobile */
-    align-items: center;
-    gap: 14px;
+/* Mobile default: hidden */
+.reg-top-center{
+    display: none;
   }
   
+  /* Desktop: visible + evenly spaced */
   @media (min-width: 900px){
-    .reg-top-center{ display: flex; }
+    .reg-top-center{
+      display: grid;
+      flex: 1;
+      min-width: 0;
+  
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+      justify-items: center;
+    }
+  
+    .reg-kicker--center{
+      text-align: center;
+    }
   }
+  
   
   /* tiny svgs in the top row */
   .reg-mini-svg{
     width: 56px;
     height: auto;
-    transform: rotate(-18deg);
     opacity: 0.9;
   }
   
