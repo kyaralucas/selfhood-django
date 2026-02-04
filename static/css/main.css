@@ -225,7 +225,7 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
     line-height: 1.4;
-    opacity: 0.95;
+    /* opacity: 0.95; */
   }
   
   .opening__date{ 
@@ -260,7 +260,7 @@
     text-align: justify;
     font-size: 14px;
     line-height: 1.55;
-    opacity: 0.95;
+    /* opacity: 0.95; */
   }
   
   .opening__body p{
@@ -308,7 +308,7 @@
     margin: 8px auto 0;
     font-size: 11px;
     line-height: 1.4;
-    opacity: 0.9;
+    /* opacity: 0.9; */
   }
   
 
@@ -348,7 +348,7 @@
   .resting-cta__text{
     margin: 0 auto 22px;
     width: min(560px, 100%);
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.5;
     opacity: 0.95;
     text-align: center;
@@ -483,7 +483,7 @@
   
   .about__heading{
     margin: 0 0 10px;
-    font-size: 11px;
+    font-size: 14px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-weight: 600;
@@ -491,7 +491,7 @@
   
   .about__block p{
     margin: 0 0 12px;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.6;
   }
   

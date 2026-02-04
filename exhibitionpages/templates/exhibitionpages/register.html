@@ -69,6 +69,13 @@
               {{ form.email }}
             </div>
           </div>
+
+          <br>
+          <div class="reg-field">
+            <label class="reg-label">Guests</label>
+            {{ form.guests }}
+            <div class="reg-hint">If your group is more than 2, please register separately.</div>
+          </div>          
       
           <div class="reg-section">
             <div class="reg-subtitle"></div>
@@ -83,7 +90,7 @@
             </div>
           </div>
       
-          <button class="reg-submit" id="nextBtn" type="button">Next</button>
+          <button class="btn reg-submit" id="nextBtn" type="button">Next</button>
         </div>
       
         <!-- STEP 2: TIMESLOT -->
@@ -116,8 +123,8 @@
           </div>
       
           <div class="reg-actions">
-            <button class="reg-submit reg-submit--ghost" id="backBtn" type="button">Back</button>
-            <button class="reg-submit" type="submit">Register</button>
+            <button class="btn reg-submit reg-submit--ghost" id="backBtn" type="button">Back</button>
+            <button class="btn reg-submit" type="submit">Register</button>
           </div>
         </div>
       </form>
@@ -158,10 +165,13 @@
       });
     }
   
+    const guestsInput = document.getElementById("id_guests");
+
     function basicValidateDetails(){
-      const nameOk = nameInput && nameInput.value.trim().length > 0;
-      const emailOk = emailInput && emailInput.value.trim().length > 0;
-      return nameOk && emailOk;
+    const nameOk = nameInput && nameInput.value.trim().length > 0;
+    const emailOk = emailInput && emailInput.value.trim().length > 0;
+    const guestsOk = !guestsInput || guestsInput.value === "1" || guestsInput.value === "2";
+    return nameOk && emailOk && guestsOk;
     }
   
     nextBtn.addEventListener("click", () => {

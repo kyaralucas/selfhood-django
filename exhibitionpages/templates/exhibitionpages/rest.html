@@ -163,9 +163,19 @@ function forceRepaint(el) {
   const qas = JSON.parse(document.getElementById("qas-data").textContent || "[]")
     .filter(x => (x.prompt_answer || "").trim().length > 0);
 
-  function pickRandomQA() {
-    return qas[Math.floor(Math.random() * qas.length)];
-  }
+//   function pickRandomQA() {
+//     return qas[Math.floor(Math.random() * qas.length)];
+//   }
+
+    let qaIndex = Math.floor(Math.random() * qas.length);
+
+    function getNextQA() {
+    if (!qas.length) return null;
+
+    const item = qas[qaIndex];
+    qaIndex = (qaIndex + 1) % qas.length; // wrap to 0 after the last
+    return item;
+    }
 
   async function startSequence() {
     await tryPlayAudio();
@@ -238,7 +248,7 @@ function waitForAnimationEnd(el, fallbackMs = 950) {
 
 
 // first QA
-let current = pickRandomQA();
+let current = getNextQA();
 renderQA(current);
 playEnter();
 await waitForAnimationEnd(qaWrap);
@@ -263,7 +273,7 @@ nextBtn.addEventListener("click", async () => {
   qaWrap.style.visibility = "hidden";
 
   // swap content
-  current = pickRandomQA();
+  current = getNextQA();
   renderQA(current);
 
   // Force repaint before showing again

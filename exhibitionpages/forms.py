@@ -1,11 +1,25 @@
 from django import forms
 from .models import Registration, TimeSlot
 
+from django import forms
+from .models import Registration, TimeSlot
+
 class RegistrationForm(forms.ModelForm):
+    guests = forms.ChoiceField(
+        choices=[(1, "1"), (2, "2")],
+        initial=1,
+        required=True,
+        label="Guests",
+        widget=forms.Select()
+    )
+
     prompt_answer = forms.CharField(
         required=False,
         label="(Optional) Your answer",
-        widget=forms.Textarea(attrs={"rows": 3, "placeholder": "Answer with one word or a short phrase. Will be added anonymously to digital resting space."})
+        widget=forms.Textarea(attrs={
+            "rows": 3,
+            "placeholder": "Answer with one word or a short phrase. Will be added anonymously to digital resting space."
+        })
     )
 
     slot = forms.ModelChoiceField(
@@ -16,7 +30,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Registration
-        fields = ["name", "email", "slot", "prompt_answer"] 
+        fields = ["name", "email", "guests", "slot", "prompt_answer"]  # ✅ add guests
         widgets = {
             "name": forms.TextInput(attrs={"autocomplete": "name"}),
             "email": forms.EmailInput(attrs={"autocomplete": "email"}),
@@ -24,5 +38,5 @@ class RegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Always show slots in chronological order
         self.fields["slot"].queryset = TimeSlot.objects.order_by("time")
+

@@ -41,13 +41,19 @@ def register(request):
                 # Lock the chosen slot row so reserved can't be updated concurrently
                 slot = TimeSlot.objects.select_for_update().get(pk=chosen_slot.pk)
 
-                if slot.reserved >= slot.capacity:
-                    form.add_error("slot", "That time slot is full. Please choose another one.")
+                guest_count = int(form.cleaned_data.get("guests") or 1)
+
+                if slot.reserved + guest_count > slot.capacity:
+                    form.add_error("slot", "That time slot doesn't have enough space. Please choose another one.")
                 else:
-                    slot.reserved += 1
+                    slot.reserved += guest_count
                     slot.save(update_fields=["reserved"])
 
                     obj = form.save(commit=False)
+                    obj.prompt_question = asked_question
+                    obj.slot = slot
+                    obj = form.save(commit=False)
+                    obj.guests = int(form.cleaned_data["guests"])  # optional safety
                     obj.prompt_question = asked_question
                     obj.slot = slot
                     obj.save()
