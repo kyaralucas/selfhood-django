@@ -729,6 +729,13 @@
     opacity: 0.95;
     margin-bottom: 18px;
   }
+
+  .rest-qa__q,
+.rest-qa__a{
+  overflow-wrap: anywhere;  /* best for very long strings */
+  word-break: break-word;  /* fallback */
+  white-space: pre-wrap;   /* keep newlines, still wrap */
+}
   
   .rest-next{
     background: transparent;
@@ -1208,6 +1215,20 @@
     gap: 12px;
     margin-top: 14px;
   }
+
+  /* Allow grid children to actually shrink instead of overflowing */
+.thanks-row > * {
+    min-width: 0;
+  }
+  
+  /* Wrap long answers safely */
+  .thanks-value,
+  .thanks-prompt-a {
+    white-space: pre-wrap;       /* keeps newlines, wraps normal text */
+    overflow-wrap: anywhere;     /* breaks super-long strings */
+    word-break: break-word;      /* fallback for older browsers */
+  }
+  
   
   @media (max-width: 520px){
     .thanks-actions{ grid-template-columns: 1fr; }

@@ -83,11 +83,19 @@
             <div class="reg-prompt">
               <div class="reg-prompt__q"></div>
               <input type="hidden" name="asked_question" value="{{ asked_question|escape }}">
-              <label class="reg-label">(OPTIONAL) {{ asked_question }}</label>
+              <label class="reg-label">(OPTIONAL) {{ asked_question }} (<span id="answerCount">0</span>/1000)</label>
+              <!-- <div class="reg-hint">
+                
+            </div> -->
               <!-- <label class="reg-label">{{ form.prompt_answer.label }}</label> -->
               {{ form.prompt_answer }}
               <!-- <div class="reg-hint">You can leave this blank.</div> -->
             </div>
+            
+            {% if form.errors.prompt_answer %}
+            <div class="reg-error">{{ form.errors.prompt_answer }}</div>
+            {% endif %}
+
           </div>
       
           <button class="btn reg-submit" id="nextBtn" type="button">Next</button>
@@ -135,6 +143,16 @@
 </section>
 
 <script>
+
+    const ta = document.querySelector('textarea[name="prompt_answer"]');
+  const out = document.getElementById('answerCount');
+
+  if (ta && out) {
+    const update = () => out.textContent = ta.value.length;
+    ta.addEventListener('input', update);
+    update();
+  }
+
     const stepDetails = document.getElementById("stepDetails");
     const stepSlot = document.getElementById("stepSlot");
     const nextBtn = document.getElementById("nextBtn");

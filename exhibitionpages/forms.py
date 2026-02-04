@@ -15,9 +15,11 @@ class RegistrationForm(forms.ModelForm):
 
     prompt_answer = forms.CharField(
         required=False,
+        max_length=1000, 
         label="(Optional) Your answer",
         widget=forms.Textarea(attrs={
             "rows": 3,
+            "maxlength": 1000,  
             "placeholder": "Answer with one word or a short phrase. Will be added anonymously to digital resting space."
         })
     )
@@ -30,7 +32,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Registration
-        fields = ["name", "email", "guests", "slot", "prompt_answer"]  # ✅ add guests
+        fields = ["name", "email", "guests", "slot", "prompt_answer"] 
         widgets = {
             "name": forms.TextInput(attrs={"autocomplete": "name"}),
             "email": forms.EmailInput(attrs={"autocomplete": "email"}),

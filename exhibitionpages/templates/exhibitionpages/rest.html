@@ -163,10 +163,6 @@ function forceRepaint(el) {
   const qas = JSON.parse(document.getElementById("qas-data").textContent || "[]")
     .filter(x => (x.prompt_answer || "").trim().length > 0);
 
-//   function pickRandomQA() {
-//     return qas[Math.floor(Math.random() * qas.length)];
-//   }
-
     let qaIndex = Math.floor(Math.random() * qas.length);
 
     function getNextQA() {

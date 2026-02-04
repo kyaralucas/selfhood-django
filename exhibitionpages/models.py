@@ -1,3 +1,4 @@
+from django.core.validators import MaxLengthValidator
 from django.db import models
 
 # Create your models here.
@@ -23,7 +24,7 @@ class Registration(models.Model):
 
     # Optional prompt during registration
     prompt_question = models.TextField(blank=True, default="")
-    prompt_answer = models.TextField(blank=True, default="")
+    prompt_answer = models.TextField(blank=True, default="", validators=[MaxLengthValidator(1000)],)
 
     # Chosen slot
     slot = models.ForeignKey(TimeSlot, on_delete=models.PROTECT, related_name="registrations")
