@@ -3,7 +3,7 @@ from .models import Registration, TimeSlot
 
 @admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
-    list_display = ("time", "reserved", "capacity")
+    list_display = ("time", "reserved_count", "capacity")
 
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):

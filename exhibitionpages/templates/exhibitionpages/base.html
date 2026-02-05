@@ -6,6 +6,7 @@
   <meta name="color-scheme" content="light">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/32x32.png' %}">
 
   <title>SELFHOOD - Ora mi topa mi mes</title>
   <meta name="description" content="We are super excited to welcome you to Ora mi topa mi mes, an exhibition catered to rest and Afro-Caribbean womanhood." />
@@ -13,20 +14,20 @@
   <!-- Google / Search Engine Tags -->
   <meta itemprop="name" content="SELFHOOD - Ora mi topa mi mes" />
   <meta itemprop="description" content="We are super excited to welcome you to Ora mi topa mi mes, an exhibition catered to rest and Afro-Caribbean womanhood." />
-  <meta itemprop="image" content="{% static 'img/meta_tag_image.png' %}" />
+  <meta itemprop="image" content="https://raw.githubusercontent.com/kyaralucas/selfhood-django/refs/heads/main/static/img/meta_tag_image.png" />
 
   <!-- Facebook Meta Tags -->
   <meta property="og:url" content="https://oramitopamimes.aqueenewilson.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="SELFHOOD - Ora mi topa mi mes" />
   <meta property="og:description" content="We are super excited to welcome you to Ora mi topa mi mes, an exhibition catered to rest and Afro-Caribbean womanhood." />
-  <meta property="og:image" content="{% static 'img/meta_tag_image.png' %}" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/kyaralucas/selfhood-django/refs/heads/main/static/img/meta_tag_image.png" />
 
   <!-- Twitter Meta Tags -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="SELFHOOD - Ora mi topa mi mes" />
   <meta name="twitter:description" content="We are super excited to welcome you to Ora mi topa mi mes, an exhibition catered to rest and Afro-Caribbean womanhood." />
-  <meta name="twitter:image" content="{% static 'img/meta_tag_image.png' %}" />
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/kyaralucas/selfhood-django/refs/heads/main/static/img/meta_tag_image.png" />
 
 
   <title>{% block title %}SELFHOOD · Ora mi topa mi mes{% endblock %}</title>
@@ -35,5 +36,7 @@
   <main>
     {% block content %}{% endblock %}
   </main>
+  <!-- 100% privacy-first analytics -->
+<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </body>
 </html>

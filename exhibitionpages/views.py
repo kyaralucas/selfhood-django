@@ -5,6 +5,10 @@ from .forms import RegistrationForm
 from .models import Registration, TimeSlot
 from .questions import QUESTIONS
 
+from django.db import transaction
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
+
 # Create your views here.
 def home(request):
     return render(request, "exhibitionpages/home.html")
@@ -37,26 +41,25 @@ def register(request):
         if form.is_valid():
             with transaction.atomic():
                 chosen_slot = form.cleaned_data["slot"]
-
-                # Lock the chosen slot row so reserved can't be updated concurrently
-                slot = TimeSlot.objects.select_for_update().get(pk=chosen_slot.pk)
-
                 guest_count = int(form.cleaned_data.get("guests") or 1)
 
-                if slot.reserved + guest_count > slot.capacity:
+                # Lock slot row to prevent race conditions
+                slot = TimeSlot.objects.select_for_update().get(pk=chosen_slot.pk)
+
+                # Compute current reserved from registrations (sum of guests)
+                current_reserved = (
+                    slot.registrations.aggregate(total=Coalesce(Sum("guests"), 0))["total"]
+                )
+
+                if current_reserved + guest_count > slot.capacity:
                     form.add_error("slot", "That time slot doesn't have enough space. Please choose another one.")
                 else:
-                    slot.reserved += guest_count
-                    slot.save(update_fields=["reserved"])
-
                     obj = form.save(commit=False)
-                    obj.prompt_question = asked_question
-                    obj.slot = slot
-                    obj = form.save(commit=False)
-                    obj.guests = int(form.cleaned_data["guests"])  # optional safety
+                    obj.guests = guest_count
                     obj.prompt_question = asked_question
                     obj.slot = slot
                     obj.save()
+
                     request.session["last_registration_id"] = obj.pk
                     return redirect("register_thanks")
     else:
@@ -68,11 +71,7 @@ def register(request):
     return render(
         request,
         "exhibitionpages/register.html",
-        {
-            "form": form,
-            "asked_question": asked_question,
-            "slots": slots,  # for custom rendering
-        },
+        {"form": form, "asked_question": asked_question, "slots": slots},
     )
 
 def register_thanks(request):

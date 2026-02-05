@@ -1,19 +1,27 @@
 from django.core.validators import MaxLengthValidator
 from django.db import models
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 
 # Create your models here.
 class TimeSlot(models.Model):
-    time = models.CharField(max_length=5, unique=True) # ex. 19:00
-    capacity  = models.PositiveSmallIntegerField(default=15)
-    reserved = models.PositiveSmallIntegerField(default=0)
+    time = models.CharField(max_length=5, unique=True)  # ex. 19:00
+    capacity = models.PositiveSmallIntegerField(default=15)
 
     def __str__(self):
-        return f"{self.time}  ({self.reserved}/{self.capacity})"
-    
+        return f"{self.time} ({self.reserved_count}/{self.capacity})"
 
-    @property 
+    @property
+    def reserved_count(self) -> int:
+        # Total people reserved for this slot = sum of guests across registrations
+        return (
+            self.registrations.aggregate(total=Coalesce(Sum("guests"), 0))["total"]
+        )
+
+    @property
     def is_full(self) -> bool:
-        return self.reserved >= self.capacity 
+        return self.reserved_count >= self.capacity
+
     
 
 class Registration(models.Model):
