@@ -50,7 +50,7 @@
   <div class="reg-card">
 
 
-    <form method="post" class="reg-form" id="regForm">
+    <form method="post" class="reg-form" id="regForm" novalidate>
         {% csrf_token %}
       
         <!-- Step indicators (optional, ties to your dots) -->
@@ -132,10 +132,24 @@
       
           <div class="reg-actions">
             <button class="btn reg-submit reg-submit--ghost" id="backBtn" type="button">Back</button>
-            <button class="btn reg-submit" type="submit">Register</button>
+          
+            <button class="btn reg-submit" id="registerBtn" type="submit">
+              <span class="btn-label">Register</span>
+              <span class="btn-spinner" aria-hidden="true"></span>
+            </button>
           </div>
+          
         </div>
       </form>
+
+      <div id="processingOverlay" class="processing-overlay" hidden>
+        <br>
+        <div class="processing-box" role="status" aria-live="polite">
+          <div class="processing-spinner" aria-hidden="true"></div>
+          <div class="reg-note">Processing your registration…</div>
+        </div>
+      </div>
+      
       
 
   </div>
@@ -143,6 +157,54 @@
 </section>
 
 <script>
+
+
+
+
+      (function () {
+    const form = document.getElementById("regForm");
+    const overlay = document.getElementById("processingOverlay");
+    if (!form || !overlay) return;
+
+    function showOverlay() {
+      overlay.hidden = false;
+      // prevent accidental double-clicks while waiting
+      const buttons = form.querySelectorAll('button, input[type="submit"]');
+      buttons.forEach(b => b.disabled = true);
+    }
+
+    function hideOverlay() {
+      overlay.hidden = true;
+      const buttons = form.querySelectorAll('button, input[type="submit"]');
+      buttons.forEach(b => b.disabled = false);
+    }
+
+    // Intercept the actual submit button click so we can repaint first
+    form.addEventListener("click", function (e) {
+      const submitBtn = e.target.closest('button[type="submit"], input[type="submit"]');
+      if (!submitBtn) return;
+
+      // If HTML5 validation fails, don't show overlay
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Stop immediate navigation; show overlay; submit next frame
+      e.preventDefault();
+      showOverlay();
+
+      requestAnimationFrame(() => {
+        form.submit(); // programmatic submit
+      });
+    });
+
+    // If user goes back and browser restores the page from cache, reset UI
+    window.addEventListener("pageshow", function (e) {
+      if (e.persisted) hideOverlay();
+    });
+  })();
+
 
     const ta = document.querySelector('textarea[name="prompt_answer"]');
   const out = document.getElementById('answerCount');
@@ -185,21 +247,47 @@
   
     const guestsInput = document.getElementById("id_guests");
 
-    function basicValidateDetails(){
-    const nameOk = nameInput && nameInput.value.trim().length > 0;
-    const emailOk = emailInput && emailInput.value.trim().length > 0;
-    const guestsOk = !guestsInput || guestsInput.value === "1" || guestsInput.value === "2";
-    return nameOk && emailOk && guestsOk;
+    function isStrictEmail(email) {
+    // simple “must have @ and a dot in the domain” rule
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
     }
-  
+
+
+
+
+    function basicValidateDetails() {
+  const nameOk = nameInput && nameInput.value.trim().length > 0;
+
+  const emailVal = (emailInput && emailInput.value || "").trim();
+  const emailOk = emailVal.length > 0 && isStrictEmail(emailVal);
+
+  const guestsOk = !guestsInput || guestsInput.value === "1" || guestsInput.value === "2";
+  return nameOk && emailOk && guestsOk;
+}
+
     nextBtn.addEventListener("click", () => {
-      if (!basicValidateDetails()){
-        // super simple feedback (no fancy UI)
-        alert("Please fill in your name and email first.");
+    if (!nameInput.value.trim()) {
+        alert("Please fill in your name first.");
+        nameInput.focus();
         return;
-      }
-      showStep(2);
+    }
+
+    const emailVal = emailInput.value.trim();
+    if (!emailVal) {
+        alert("Please fill in your email first.");
+        emailInput.focus();
+        return;
+    }
+
+    if (!isStrictEmail(emailVal)) {
+        alert("Please enter a valid email address (example: name@example.com).");
+        emailInput.focus();
+        return;
+    }
+
+    showStep(2);
     });
+
   
     backBtn.addEventListener("click", () => showStep(1));
   

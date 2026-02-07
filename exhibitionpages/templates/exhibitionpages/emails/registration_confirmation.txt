@@ -1,0 +1,6 @@
+Dear {{ name }},
+
+Your spot for the opening of SELFHOOD: Ora mi topa mi mes is officially secured. We've reserved the {{ time }} slot for you on February 20th. We can't wait to welcome you!
+
+Warmly,
+The SELFHOOD team

@@ -1150,6 +1150,57 @@
     border: 1px solid rgba(0,0,0,0.55);
     color: rgba(0,0,0,0.92);
   }
+
+    /*  Post registration overlay */
+    .processing-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        display: grid !important;
+        place-items: center !important;
+        background: rgba(255, 255, 255, 0.75) !important;
+        z-index: 99999 !important;
+      }
+      
+      .processing-box {
+        background: white !important;
+        padding: 16px 18px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+      
+      .processing-spinner{
+        display:inline-block !important;
+        width:18px !important;
+        height:18px !important;
+      
+        box-sizing:border-box !important;
+      
+        border-style:solid !important;
+        border-width:2px !important;
+        border-color:#111 !important;
+        border-top-color:transparent !important; /* creates the spinning gap */
+        border-radius:50% !important;
+      
+        background:transparent !important;
+        opacity:1 !important;
+        visibility:visible !important;
+      
+        animation:processing-spin 0.8s linear infinite !important;
+      }
+      
+      
+      .processing-text {
+        font-size: 14px !important;
+      }
+      
+      @keyframes processing-spin {
+        to { transform: rotate(360deg); }
+      }
+      
+
   
   /* Optional: highlight active tab */
   .reg-tab.is-active{

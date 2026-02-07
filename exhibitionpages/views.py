@@ -9,6 +9,19 @@ from django.db import transaction
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 
+import time 
+
+# For sending emails
+from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.db import transaction
+
+# Logging
+import logging
+logger = logging.getLogger(__name__)
+
 # Create your views here.
 def home(request):
     return render(request, "exhibitionpages/home.html")
@@ -59,6 +72,38 @@ def register(request):
                     obj.prompt_question = asked_question
                     obj.slot = slot
                     obj.save()
+
+                    def send_confirmation_email(registration_id: int):
+                        reg = (
+                            Registration.objects
+                            .select_related("slot")
+                            .get(pk=registration_id)
+                        )
+
+                        subject = "Your SELFHOOD timeslot is confirmed"
+                        message = render_to_string(
+                            "exhibitionpages/emails/registration_confirmation.txt",
+                            {
+                                "name": getattr(reg, "name", "there"),
+                                "time": reg.slot.time,  # adjust formatting as needed
+                            },
+                        )
+
+                        send_mail(
+                            subject=subject,
+                            message=message,
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            recipient_list=[reg.email],
+                            fail_silently=False,
+                        )
+
+                    try:
+                        transaction.on_commit(lambda: send_confirmation_email(obj.pk))
+                        # time.sleep(3)
+                        logger.exception("Confirmation email SENT for registration %s", obj.pk)
+                    except Exception:
+                        logger.exception("Confirmation email FAILED for registration %s", obj.pk)
+                    
 
                     request.session["last_registration_id"] = obj.pk
                     return redirect("register_thanks")
