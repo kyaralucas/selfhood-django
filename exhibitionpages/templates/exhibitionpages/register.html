@@ -138,17 +138,16 @@
               <span class="btn-spinner" aria-hidden="true"></span>
             </button>
           </div>
+
+          <div id="submitStatus" class="reg-note" hidden style="text-align:center;">
+            <br>
+            Processing your registration…
+          </div>
+          
           
         </div>
       </form>
 
-      <div id="processingOverlay" class="processing-overlay" hidden>
-        <br>
-        <div class="processing-box" role="status" aria-live="polite">
-          <div class="processing-spinner" aria-hidden="true"></div>
-          <div class="reg-note">Processing your registration…</div>
-        </div>
-      </div>
       
       
 
@@ -159,51 +158,43 @@
 <script>
 
 
+(function () {
+  const form = document.getElementById("regForm");
+  const registerBtn = document.getElementById("registerBtn");
+  const status = document.getElementById("submitStatus");
+  const backBtn = document.getElementById("backBtn");
 
+  if (!form || !registerBtn || !status) return;
 
-      (function () {
-    const form = document.getElementById("regForm");
-    const overlay = document.getElementById("processingOverlay");
-    if (!form || !overlay) return;
-
-    function showOverlay() {
-      overlay.hidden = false;
-      // prevent accidental double-clicks while waiting
-      const buttons = form.querySelectorAll('button, input[type="submit"]');
-      buttons.forEach(b => b.disabled = true);
-    }
-
-    function hideOverlay() {
-      overlay.hidden = true;
-      const buttons = form.querySelectorAll('button, input[type="submit"]');
-      buttons.forEach(b => b.disabled = false);
-    }
-
-    // Intercept the actual submit button click so we can repaint first
-    form.addEventListener("click", function (e) {
-      const submitBtn = e.target.closest('button[type="submit"], input[type="submit"]');
-      if (!submitBtn) return;
-
-      // If HTML5 validation fails, don't show overlay
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-
-      // Stop immediate navigation; show overlay; submit next frame
+  registerBtn.addEventListener("click", function (e) {
+    // Basic guard: require a slot selection on step 2
+    const slotChecked = form.querySelector('input[name="slot"]:checked');
+    if (!slotChecked) {
       e.preventDefault();
-      showOverlay();
+      alert("Please choose a time slot first.");
+      return;
+    }
 
-      requestAnimationFrame(() => {
-        form.submit(); // programmatic submit
-      });
-    });
+    // Prevent immediate navigation so the browser can paint the status text
+    e.preventDefault();
 
-    // If user goes back and browser restores the page from cache, reset UI
-    window.addEventListener("pageshow", function (e) {
-      if (e.persisted) hideOverlay();
-    });
-  })();
+    status.hidden = false;
+    registerBtn.disabled = true;
+    if (backBtn) backBtn.disabled = true;
+
+    // Submit next frame (lets the UI update show)
+    requestAnimationFrame(() => form.submit());
+  });
+
+  // If user goes back and the page is restored from cache, reset UI
+  window.addEventListener("pageshow", function (ev) {
+    if (ev.persisted) {
+      status.hidden = true;
+      registerBtn.disabled = false;
+      if (backBtn) backBtn.disabled = false;
+    }
+  });
+})();
 
 
     const ta = document.querySelector('textarea[name="prompt_answer"]');
