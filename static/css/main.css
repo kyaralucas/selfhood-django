@@ -193,7 +193,7 @@
     background-position: center;
     background-repeat: no-repeat;
   
-    padding: 28px 42px 40px;  /* MOBILE */
+    padding: 28px 42px 16px;  /* MOBILE */
     color: var(--accent);
     text-align: center;
   }
@@ -202,7 +202,7 @@
   @media (min-width: 900px){
     .opening{
       background-image: var(--opening-bg-desktop);
-      padding: 64px 24px 72px; /* DESKTOP */
+      padding: 64px 24px 16px; /* DESKTOP */
     }
   }
   
@@ -213,7 +213,7 @@
   
   .opening__title{
     margin: 32px 0 14px;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 600;
     letter-spacing: 0.02em;
     text-transform: uppercase;

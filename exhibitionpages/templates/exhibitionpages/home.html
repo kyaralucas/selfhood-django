@@ -33,31 +33,55 @@
       --opening-bg-mobile: url("{% static 'img/blurred_background_mobile.png' %}");
       --opening-bg-desktop: url("{% static 'img/blurred_background.png' %}");
     }
+
+    .opening {
+  position: relative;
+  overflow: hidden;
+  /* your existing background styles here */
+}
+
+/* Bottom info strip */
+.opening__meta {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  text-align: center;
+}
+
+.opening__meta-item {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 1rem 0.75rem;
+  font-size: clamp(0.8rem, 1.1vw, 1.1rem);
+  line-height: 1.2;
+  text-transform: none;
+}
+
+
+/* Mobile: stack or go 1 column */
+@media (max-width: 768px) {
+  .opening__meta {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  
+}
   </style>
 
   <div class="opening__inner">
-    <h2 class="opening__title">JOIN US FOR THE OPENING!</h2>
-
-    <div class="opening__meta">
-      <div class="opening__date"><em>20 FEBRUARY 2026 • 19:00 - 21:00</em></div>
-      <div class="opening__loc"><em>NOS SENTRO • ST. ROSAWEG 13 • WILLEMSTAD, CURAÇAO</em></div>
-    </div>
-
-    <a class="btn btn--pill" href="/register/">REGISTER HERE!</a>
+    <h2 class="opening__title">WE ARE READY TO WELCOME YOUR SOFTNESS</h2>
 
     <div class="opening__body">
       <p>
-        We are super excited to welcome you to <em>Ora mi topa mi mes</em>, an exhibition 
-        catered to rest and Afro-Caribbean womanhood.  To ensure that you have an intentional, 
-        dreamy and unrushed experience, we are welcoming guests in dedicated time slots. 
-        Please <strong>choose a timeslot</strong> and <strong>arrive on time</strong> so the space stays gentle, spacious, and attentive. 
-        Timeslots run between 19:00 and 21:00h. 
+        Come explore SELFHOOD: Ora mi topa mi mes, 
+        an immersive experience centering rest, softness & Afro-caribbean womanhood.
       </p>
 
       <p>
-        After your visit, you're more than welcome to stay. 
-        Drinks and snacks are available in the adjacent room, and you can chèlèlè there till the very end. 
-        The timed entry only applies to the exhibition space itself.
+        Our doors are open every Friday, Saturday and Sunday from 
+        February 22 - April 5. 10PM till 5 PM at Nos Sentro, St. Rosaweg 13.
       </p>
     </div>
 
@@ -77,11 +101,18 @@
     </div>
 
     <p class="opening__note">
-        <em>
+        <!-- <em>
             Registration is free. Limited capacity per timeslot to keep the experience soft and unrushed.
-        </em>
+        </em> -->
     </p>
   </div>
+
+  <div class="opening__meta" aria-label="Opening details">
+    <div class="opening__meta-item">Feb 22 – April 5</div>
+    <div class="opening__meta-item">Fri, Sat & Sundays</div>
+    <div class="opening__meta-item">10 AM till 5 PM</div>
+  </div>
+
 </section>
 {% load static %}
 
@@ -97,13 +128,13 @@
     <h2 class="resting-cta__title">DIGITAL RESTING SPACE</h2>
 
     <p class="resting-cta__text">
-      Before (or after) registering for the opening, step into our digital resting space.
+      Before (or after) visiting, step into our digital resting space.
       You'll be guided by a gentle soundscape with ease, softness, and a few words to hold.
     </p>
 
     <div class="resting-cta__actions">
       <a class="btn btn--pill btn--outline" href="/rest/">GO TO RESTING SPACE</a>
-      <a class="btn btn--pill btn--filled" href="/register/">REGISTER</a>
+      <!-- <a class="btn btn--pill btn--filled" href="/register/">REGISTER</a> -->
     </div>
   </div>
 </section>
