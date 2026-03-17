@@ -130,3 +130,9 @@ def register_thanks(request):
             .first()
         )
     return render(request, "exhibitionpages/register_thanks.html", {"reg": reg})
+
+def events(request):
+    return render(request, "exhibitionpages/events.html", {})
+
+def letters(request):
+    return render(request, "exhibitionpages/letters.html", {})

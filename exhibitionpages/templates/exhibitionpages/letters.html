@@ -1,0 +1,344 @@
+{% extends "exhibitionpages/base.html" %}
+{% load static %}
+{% block title %}Your Love Letters{% endblock %}
+
+{% block content %}
+<style>
+    .letters-page{
+  min-height: 100vh;
+  padding: 54px 18px 70px;
+  color: var(--accent);
+
+  background-image: var(--letters-bg-mobile);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  font-family: "Open Sauce", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+@media (min-width: 900px){
+  .letters-page{
+    background-image: var(--letters-bg-desktop);
+    padding: 66px 28px 90px;
+  }
+}
+
+.letters-inner{
+  width: min(1040px, 100%);
+  margin: 0 auto;
+}
+
+.letters-title{
+  margin: 0;
+  text-align: center;
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 520px){
+  .letters-title{ font-size: 30px; }
+}
+
+/* Container holding multiple blocks */
+.letters-grid{
+  margin-top: 70px;
+  display: grid;
+  gap: 90px;  /* spacing between blocks */
+}
+
+/* Each block has its own layout */
+.letters-block{
+  display: grid;
+  gap: 34px;
+  justify-items: center;
+}
+
+@media (min-width: 900px){
+  .letters-block{
+    justify-items: start;
+    align-items: start;
+  }
+}
+
+/* Shared quote style */
+.letters-quote{
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(209, 208, 47, 0.95);
+  max-width: 460px;
+}
+
+/* Shared photo card style */
+.letters-photo{
+  width: min(430px, 92vw);
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+}
+
+.letters-photo img{
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ----- BLOCK 1 layout (existing) ----- */
+@media (min-width: 900px){
+  .letters-block--one{
+    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-areas:
+      "left  ."
+      "photo right";
+    column-gap: 90px;
+    row-gap: 70px;
+  }
+
+  .letters-block--one .letters-quote--left{ grid-area: left; }
+  .letters-block--one .letters-photo{ grid-area: photo; }
+  .letters-block--one .letters-quote--right{
+    grid-area: right;
+    align-self: center;
+  }
+}
+
+/* ----- BLOCK 2 layout (NEW) ----- */
+@media (min-width: 900px){
+  .letters-block--two{
+    grid-template-columns: 1fr 1.1fr;
+    grid-template-areas:
+      "top    top"
+      "bottom photo";
+    column-gap: 90px;
+    row-gap: 70px;
+    align-items: start;
+  }
+
+  .letters-block--two .letters-quote--top{
+    grid-area: top;
+    justify-self: center;      /* center horizontally */
+    text-align: center;        /* center text */
+    max-width: 620px;          /* nice readable measure */
+  }
+
+  .letters-block--two .letters-photo{
+    grid-area: photo;
+    justify-self: end;         /* sits on the right like the design */
+  }
+
+  .letters-block--two .letters-quote--bottom{
+    grid-area: bottom;
+    max-width: 520px;
+  }
+}
+
+/* Mobile: just stack in a centered column */
+@media (max-width: 899px){
+  .letters-quote{
+    font-size: 14px;
+    max-width: 520px;
+    text-align: left;
+  }
+}
+
+/* ----- BLOCK 3 layout ----- */
+@media (min-width: 900px){
+  .letters-block--three{
+    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-areas:
+      "photo top"
+      "mid   ."
+      ".     bottom";
+    column-gap: 90px;
+    row-gap: 60px;
+    align-items: start;
+  }
+
+  .letters-block--three .letters-photo{ grid-area: photo; }
+  .letters-block--three .letters-quote--three-top{
+    grid-area: top;
+    align-self: start;
+    max-width: 430px;
+  }
+
+  .letters-block--three .letters-quote--three-mid{
+    grid-area: mid;
+    margin-top: 8px;
+    max-width: 360px;
+  }
+
+  .letters-block--three .letters-quote--three-bottom{
+    grid-area: bottom;
+    align-self: end;
+    max-width: 520px;
+  }
+}
+
+/* Mobile stacking order for block 3 */
+@media (max-width: 899px){
+  .letters-block--three{
+    grid-template-columns: 1fr;
+  }
+
+  .letters-block--three .letters-quote--three-top{ order: 1; text-align: left; }
+  .letters-block--three .letters-photo{ order: 2; }
+  .letters-block--three .letters-quote--three-mid{ order: 3; }
+  .letters-block--three .letters-quote--three-bottom{ order: 4; }
+}
+
+/* Block 4 layout  */
+
+/* ----- BLOCK 4 layout ----- */
+@media (min-width: 900px){
+  .letters-block--four{
+    grid-template-columns: 1fr 1.1fr;
+    grid-template-areas: "left photo";
+    column-gap: 90px;
+    align-items: start;
+  }
+
+  .letters-block--four .letters-quote--four-left{
+    grid-area: left;
+    align-self: start;
+    max-width: 520px;
+    margin-top: 18px; /* nudges it down a bit like screenshot */
+  }
+
+  .letters-block--four .letters-photo{
+    grid-area: photo;
+    justify-self: end;
+    width: 520px; /* bigger card like your screenshot */
+  }
+}
+
+/* Mobile: stack nicely */
+@media (max-width: 899px){
+  .letters-block--four{
+    grid-template-columns: 1fr;
+  }
+
+  .letters-block--four .letters-quote--four-left{
+    order: 1;
+    text-align: left;
+  }
+  .letters-block--four .letters-photo{
+    order: 2;
+  }
+}
+</style>
+
+<section class="letters-page">
+  <style>
+    :root{
+      --letters-bg-mobile: url("{% static 'img/blurred_background_mobile.png' %}");
+      --letters-bg-desktop: url("{% static 'img/blurred_background.png' %}");
+    }
+  </style>
+
+  <div class="letters-inner">
+    <h1 class="letters-title">YOUR LOVE LETTERS</h1>
+
+    <div class="letters-grid">
+
+        <!-- BLOCK 1 -->
+        <div class="letters-block letters-block--one">
+          <div class="letters-quote letters-quote--left">
+            E eksposishon aki ta nesesario i mas importante ku nos ta kere…you are healing
+            nervoussysterms with your work! - A.
+          </div>
+      
+          <div class="letters-photo">
+            <img src="{% static 'img/letters_1.png' %}" alt="Letter photo 1">
+          </div>
+      
+          <div class="letters-quote letters-quote--right">
+            Bedankt voor dit mooie cadeau, bedankt dat je ons ziet. De zwarte vrouw is geen
+            werker of robot. We zijn prachtige wezens die liefde verdienen. -T.
+          </div>
+        </div>
+      
+        <!-- BLOCK 2 -->
+        <div class="letters-block letters-block--two">
+          <div class="letters-quote letters-quote--top">
+            Sprakeloos, kippenvel, ontroerd. Deze tentoonstelling heeft mij zo dicht bij
+            mezelf gebracht. Ik kan niet wachten om dit op een grotere schaal te zien. -D.
+          </div>
+      
+          <div class="letters-photo letters-photo--right">
+            <img src="{% static 'img/letters_2.png' %}" alt="Letter photo 2">
+          </div>
+      
+          <div class="letters-quote letters-quote--bottom">
+            We are going to make this a traveling exhibition.<br>
+            This is on a global level. - E.
+          </div>
+        </div>
+
+        <!-- BLOCK 3 -->
+        <div class="letters-block letters-block--three">
+            <div class="letters-photo letters-photo--left">
+              <img src="{% static 'img/letters_3.png' %}" alt="Letter photo 3">
+            </div>
+          
+            <div class="letters-quote letters-quote--three-top">
+              Mi a keda sin palabra.. I feel so in tune and aware of my body. Mi no ta sa kon grandi mi
+              nesesidat ta, untill now. - A
+            </div>
+          
+            <div class="letters-quote letters-quote--three-mid">
+              So good I had to come twice. - C.
+            </div>
+          
+            <div class="letters-quote letters-quote--three-bottom">
+              Ora Mi Topa Mi Mes is not your average expo — it's a walking meditation. People walk in
+              carrying the weight of the day. They walk out… different. Lighter. Quieter. More themselves. - K.
+            </div>
+          </div>
+
+          <!-- BLOCK 4 -->
+          <div class="letters-block letters-block--four">
+            <div class="letters-quote letters-quote--four-left">
+              Prachtige foto’s, prachtige muziek. Mooi thema! - M.
+            </div>
+          
+            <div class="letters-photo letters-photo--four-right">
+              <img src="{% static 'img/letters_4.png' %}" alt="Letter photo 4">
+            </div>
+          </div>
+      
+      </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+    <div class="site-footer__inner">
+  
+      <div class="site-footer__col site-footer__col--left">
+        <p>20 Feb - 5 April<br>Every Fri, Sat &amp; Sun</p>
+  
+        <p>Nos Sentro<br>St. Rosaweg 13, Curacao</p>
+  
+        <p>Website design by Aqueene Wilson, <br> development by Kyara Lucas</p>
+      </div>
+  
+      <div class="site-footer__col site-footer__col--center"> 
+      </div> 
+  
+      <div class="site-footer__col site-footer__col--right">
+        <p>Want to come with a group?<br>Or during the week?</p>
+  
+        <p>Simply reach out!<br>
+          <a class="site-footer__link" href="mailto:aqueenewilson@gmail.com">aqueenewilson@gmail.com</a>
+        </p>
+      </div>
+  
+    </div>
+  </footer>
+
+{% endblock %}
+
