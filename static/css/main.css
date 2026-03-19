@@ -255,11 +255,10 @@
   .btn--pill:hover{ filter: brightness(1.03); }
   .btn--pill:active{ transform: translateY(1px); }
   
-
+  /* Test test test  */
   .opening__body{
     margin: 22px auto 26px;
     text-align: justify;
-    text-justify: inter-word;
     font-size: 16px;
     line-height: 1.55;
     max-width: 500px;
