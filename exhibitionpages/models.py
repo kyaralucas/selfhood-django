@@ -40,4 +40,18 @@ class Registration(models.Model):
 
     def __str__(self):
         return f"{self.name} < {self.email}> (+{self.guests}) [{self.slot.time}]"
+
+class SimpleRegistration(models.Model):
+    name = models.CharField(max_length=120)
+    email = models.EmailField()
+    guests = models.PositiveSmallIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Optional prompt during registration
+    prompt_question = models.TextField(blank=True, default="")
+    prompt_answer = models.TextField(blank=True, default="", validators=[MaxLengthValidator(1000)],)
+
+    def __str__(self):
+        return f"{self.name} < {self.email}> (+{self.guests})"
     
+

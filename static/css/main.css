@@ -255,13 +255,15 @@
   .btn--pill:hover{ filter: brightness(1.03); }
   .btn--pill:active{ transform: translateY(1px); }
   
+
   .opening__body{
     margin: 22px auto 26px;
     text-align: justify;
-    font-size: 14px;
+    text-justify: inter-word;
+    font-size: 16px;
     line-height: 1.55;
-    /* opacity: 0.95; */
-  }
+    max-width: 500px;
+}
   
   .opening__body p{
     margin: 0 0 12px;
@@ -1253,119 +1255,4 @@
     padding: 10px 6px;
   }
   
-  /* Events page */
-
-  .events-page{
-    min-height: 100vh;
-    background: var(--accent);
-    color: #0f0f0f;
-    padding: 64px 18px 90px;
-    font-family: "Open Sauce", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  }
   
-  @media (min-width: 900px){
-    .events-page{ padding: 72px 24px 110px; }
-  }
-  
-  .events-inner{
-    width: min(720px, 100%);
-    margin: 0 auto;
-    text-align: center;
-  }
-  
-  .events-title{
-    margin: 0 0 56px;
-    font-size: 34px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    line-height: 1.15;
-  }
-  
-  @media (max-width: 520px){
-    .events-title{ font-size: 26px; margin-bottom: 44px; }
-  }
-  
-  .events-list{
-    display: grid;
-    gap: 86px;
-  }
-  
-  @media (max-width: 520px){
-    .events-list{ gap: 64px; }
-  }
-  
-  .event-heading{
-    margin: 0 0 6px;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-  
-  .event-underline{
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-thickness: 2px;
-  }
-  
-  .event-date{
-    font-style: italic;
-    font-size: 18px;
-    margin: 0 0 18px;
-  }
-  
-  .event-body{
-    margin: 0 auto 16px;
-    width: min(560px, 100%);
-    font-size: 16px;
-    line-height: 1.55;
-    font-style: italic;
-  }
-  
-  .event-signup{
-    font-size: 16px;
-    font-style: italic;
-    margin-top: 6px;
-  }
-  
-  .event-signup a{
-    color: inherit;
-    text-decoration: none;
-    border-bottom: 1px solid rgba(0,0,0,0.6);
-  }
-  .event-signup a:hover{
-    border-bottom-color: rgba(0,0,0,0.95);
-  }
-  
-  /* Buttons at bottom */
-  .events-actions{
-    margin-top: 70px;
-    display: grid;
-    gap: 16px;
-    justify-items: center;
-  }
-  
-  .events-btn{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  
-    padding: 14px 22px;
-    border-radius: 999px;
-    border: 1px solid rgba(0,0,0,0.8);
-    background: transparent;
-  
-    color: #0f0f0f;
-    text-decoration: none;
-  
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    font-weight: 600;
-  
-    width: min(360px, 92%);
-  }
-  
-  .events-btn:hover{ filter: brightness(1.02); }
-  .events-btn:active{ transform: translateY(1px); }

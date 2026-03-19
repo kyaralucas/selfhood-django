@@ -1,13 +1,14 @@
 import random
 from django.shortcuts import render, redirect
 from django.db import transaction
-from .forms import RegistrationForm
-from .models import Registration, TimeSlot
+from .forms import RegistrationForm, SimpleRegistrationForm
+from .models import Registration, TimeSlot, SimpleRegistration
 from .questions import QUESTIONS
 
 from django.db import transaction
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
+from django.contrib import messages
 
 import time 
 
@@ -45,6 +46,138 @@ def rest(request):
         {"qas": sample_prompts},
     )
 
+MAX_GUESTS = 30
+
+def simple_register(request):
+    total_registered = (
+        SimpleRegistration.objects.aggregate(total=Sum("guests"))["total"] or 0
+    )
+    remaining_spots = max(0, MAX_GUESTS - total_registered)
+    sold_out = total_registered >= MAX_GUESTS
+
+    success = False
+    registered_name = None
+    registered_email = None
+    registered_guests = None
+
+    if request.method == "POST":
+        if sold_out:
+            messages.error(request, "Sorry, this event is sold out.")
+            return render(request, "exhibitionpages/simple_register.html", {
+                "form": None,
+                "sold_out": True,
+                "total_registered": total_registered,
+                "remaining_spots": 0,
+                "max_guests": MAX_GUESTS,
+                "success": False,
+            })
+
+        form = SimpleRegistrationForm(request.POST)
+
+        if form.is_valid():
+            requested_guests = int(form.cleaned_data["guests"])
+
+            with transaction.atomic():
+                current_total = (
+                    SimpleRegistration.objects.aggregate(total=Sum("guests"))["total"] or 0
+                )
+                current_remaining = MAX_GUESTS - current_total
+
+                if current_remaining <= 0:
+                    messages.error(request, "Sorry, this event just sold out.")
+                    return render(request, "exhibitionpages/simple_register.html", {
+                        "form": None,
+                        "sold_out": True,
+                        "total_registered": current_total,
+                        "remaining_spots": 0,
+                        "max_guests": MAX_GUESTS,
+                        "success": False,
+                    })
+
+                if requested_guests > current_remaining:
+                    form.add_error("guests", f"Only {current_remaining} spot(s) remaining.")
+                else:
+                    registration = form.save(commit=False)
+                    registration.guests = requested_guests
+                    registration.save()
+
+                    def send_confirmation_email(registration_id: int):
+                        try:
+                            reg = SimpleRegistration.objects.get(pk=registration_id)
+
+                            subject = "Your seat is confirmed!"
+                            message = render_to_string(
+                                "exhibitionpages/emails/registration_confirmation.txt",
+                                {
+                                    "name": getattr(reg, "name", "there"),
+                                },
+                            )
+
+                            send_mail(
+                                subject=subject,
+                                message=message,
+                                from_email=settings.DEFAULT_FROM_EMAIL,
+                                recipient_list=[reg.email],
+                                fail_silently=False,
+                            )
+
+                            logger.info(
+                                "Confirmation email sent for registration %s to %s",
+                                reg.pk,
+                                reg.email,
+                            )
+                        except Exception:
+                            logger.exception(
+                                "Confirmation email failed for registration %s",
+                                registration_id,
+                            )
+
+                    transaction.on_commit(
+                        lambda: send_confirmation_email(registration.pk)
+                    )
+
+                    logger.info(
+                        "Confirmation email scheduled after commit for registration %s",
+                        registration.pk,
+                    )
+
+                    total_registered = (
+                        SimpleRegistration.objects.aggregate(total=Sum("guests"))["total"] or 0
+                    )
+                    remaining_spots = max(0, MAX_GUESTS - total_registered)
+                    sold_out = total_registered >= MAX_GUESTS
+
+                    success = True
+                    registered_name = registration.name
+                    registered_email = registration.email
+                    registered_guests = registration.guests
+
+                    return render(request, "exhibitionpages/simple_register.html", {
+                        "form": None,
+                        "sold_out": sold_out,
+                        "total_registered": total_registered,
+                        "remaining_spots": remaining_spots,
+                        "max_guests": MAX_GUESTS,
+                        "success": success,
+                        "registered_name": registered_name,
+                        "registered_email": registered_email,
+                        "registered_guests": registered_guests,
+                    })
+    else:
+        form = None if sold_out else SimpleRegistrationForm()
+
+    return render(request, "exhibitionpages/simple_register.html", {
+        "form": form,
+        "sold_out": sold_out,
+        "total_registered": total_registered,
+        "remaining_spots": remaining_spots,
+        "max_guests": MAX_GUESTS,
+        "success": success,
+        "registered_name": registered_name,
+        "registered_email": registered_email,
+        "registered_guests": registered_guests,
+    })
+
 
 def register(request):
     if request.method == "POST":
@@ -80,7 +213,7 @@ def register(request):
                             .get(pk=registration_id)
                         )
 
-                        subject = "Your SELFHOOD timeslot is confirmed"
+                        subject = "SUBJECT: Your seat is confirmed!"
                         message = render_to_string(
                             "exhibitionpages/emails/registration_confirmation.txt",
                             {
@@ -100,7 +233,7 @@ def register(request):
                     try:
                         transaction.on_commit(lambda: send_confirmation_email(obj.pk))
                         # time.sleep(3)
-                        logger.exception("Confirmation email SENT for registration %s", obj.pk)
+                        logger.info("Confirmation email SENT for registration %s", obj.pk)
                     except Exception:
                         logger.exception("Confirmation email FAILED for registration %s", obj.pk)
                     
@@ -119,12 +252,13 @@ def register(request):
         {"form": form, "asked_question": asked_question, "slots": slots},
     )
 
+
 def register_thanks(request):
     reg_id = request.session.get("last_registration_id")
     reg = None
     if reg_id:
         reg = (
-            Registration.objects
+            SimpleRegistration.objects
             .select_related("slot")
             .filter(pk=reg_id)
             .first()

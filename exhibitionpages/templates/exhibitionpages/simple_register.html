@@ -1,0 +1,215 @@
+{% extends "exhibitionpages/base.html" %}
+{% load static %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<section class="reg-page">
+
+  <div class="reg-top">
+    <div class="reg-kicker">SELFHOOD ACT II</div>
+
+    <div class="reg-top-center">
+      <img class="reg-mini-svg reg-mini-svg--ora" src="{% static 'svg/ora_mi_black.svg' %}" alt="Ora mi">
+      <div class="reg-kicker reg-kicker--center">EXHIBITION BY AQUEENE WILSON</div>
+      <img class="reg-mini-svg reg-mini-svg--topa" src="{% static 'svg/topa_mi_mes_black.svg' %}" alt="topa mi mes">
+    </div>
+
+    <div class="reg-kicker">20 FEB-5 APRIL</div>
+  </div>
+
+  <div class="reg-hero">
+    <h1 class="reg-title">SESSION III: IN CONVERSATION WITH AQUEENE WILSON</h1>
+
+    <div class="reg-meta">
+      <div class="reg-meta__date">SATURDAY, 4 APRIL 2026 · 19:00 - 21:00</div>
+      <div class="reg-meta__loc"><em>NOS SENTRO · ST. ROSAWEG 13 · WILLEMSTAD, CURAÇAO</em></div>
+    </div>
+
+    <div class="reg-note">
+      An intimate afternoon talk + Q&amp;A with artist Aqueene Wilson, facilitated by Angèle-Marie Capriles as they explore the stories behind Wilson's powerful exhibition: Ora mi topa mi mes
+    </div>
+  </div>
+
+  <div class="reg-tabs">
+    <div class="reg-tab {% if not success %}is-active{% endif %}">
+      <span class="reg-dot"></span>
+      <span class="reg-tab__label">details</span>
+    </div>
+
+    <div class="reg-tab {% if success %}is-active{% endif %}">
+      <span class="reg-dot"></span>
+      <span class="reg-tab__label">thanks</span>
+    </div>
+  </div>
+
+  <div class="reg-card">
+
+    {% if messages %}
+      <div style="margin-bottom: 1rem;">
+        {% for message in messages %}
+          <div class="reg-note" style="margin-bottom: .5rem; text-align:center;">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if sold_out and not success %}
+      <div class="reg-section" style="text-align:center;">
+        <div class="reg-subtitle">Sold out</div>
+        <div class="reg-note">
+          We've reached the maximum capacity
+        </div>
+      </div>
+
+    {% elif success %}
+      <div class="reg-step" id="stepThanks" data-step="2">
+        <div class="reg-section">
+          <div class="thanks-summary">
+            <div class="thanks-generic">
+              <p>THANK YOU FOR YOUR REGISTRATION</p>
+              <p>Your seat has been confirmed. A confirmation email has been sent.</p>
+            </div>
+
+            <div class="thanks-row">
+              <label class="thanks-label">Name</label>
+              <div class="thanks-value">{{ registered_name }}</div>
+            </div>
+
+            <div class="thanks-row">
+              <label class="thanks-label">Email</label>
+              <div class="thanks-value">{{ registered_email }}</div>
+            </div>
+
+            <div class="thanks-row">
+              <label class="thanks-label">Guests</label>
+              <div class="thanks-value">{{ registered_guests }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    {% else %}
+      <form method="post" class="reg-form" id="regForm" novalidate>
+        {% csrf_token %}
+
+        <div class="reg-step" id="stepDetails" data-step="1">
+          <div class="reg-section">
+            <div class="reg-field">
+              <label class="reg-label" for="id_name">Name</label>
+              {{ form.name }}
+              {% if form.errors.name %}
+                <div class="reg-error">{{ form.errors.name }}</div>
+              {% endif %}
+            </div>
+
+            <div class="reg-field">
+              <label class="reg-label" for="id_email">Email</label>
+              {{ form.email }}
+              {% if form.errors.email %}
+                <div class="reg-error">{{ form.errors.email }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <br>
+
+          <div class="reg-field">
+            <label class="reg-label" for="id_guests">Guests</label>
+            {{ form.guests }}
+            <div class="reg-hint">If your group is more than 2, please register separately.</div>
+            <br>
+            {% if form.errors.guests %}
+              <div class="reg-error">{{ form.errors.guests }}</div>
+            {% endif %}
+          </div>
+
+          <div class="reg-section">
+            <div class="reg-prompt">
+              <label class="reg-label" for="id_prompt_answer">
+                {{ form.prompt_answer.label }} (<span id="answerCount">0</span>/1000)
+              </label>
+              {{ form.prompt_answer }}
+            </div>
+
+            {% if form.errors.prompt_answer %}
+              <div class="reg-error">{{ form.errors.prompt_answer }}</div>
+            {% endif %}
+          </div>
+
+          <button class="btn reg-submit" id="registerBtn" type="submit">
+            <span class="btn-label">Register</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+
+          <div id="submitStatus" class="reg-note" hidden style="text-align:center;">
+            <br>
+            Processing your registration…
+          </div>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+(function () {
+  const form = document.getElementById("regForm");
+  const registerBtn = document.getElementById("registerBtn");
+  const status = document.getElementById("submitStatus");
+  const promptInput = document.getElementById("id_prompt_answer");
+  const out = document.getElementById("answerCount");
+  const nameInput = document.getElementById("id_name");
+  const emailInput = document.getElementById("id_email");
+
+  if (promptInput && out) {
+    const update = () => out.textContent = promptInput.value.length;
+    promptInput.addEventListener("input", update);
+    update();
+  }
+
+  function isStrictEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+  }
+
+  if (form && registerBtn && status) {
+    registerBtn.addEventListener("click", function (e) {
+      if (!nameInput || !nameInput.value.trim()) {
+        e.preventDefault();
+        alert("Please fill in your name first.");
+        if (nameInput) nameInput.focus();
+        return;
+      }
+
+      const emailVal = emailInput ? emailInput.value.trim() : "";
+      if (!emailVal) {
+        e.preventDefault();
+        alert("Please fill in your email first.");
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
+      if (!isStrictEmail(emailVal)) {
+        e.preventDefault();
+        alert("Please enter a valid email address (example: name@example.com).");
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
+      e.preventDefault();
+      status.hidden = false;
+      registerBtn.disabled = true;
+
+      requestAnimationFrame(() => form.submit());
+    });
+  }
+
+  window.addEventListener("pageshow", function (ev) {
+    if (ev.persisted) {
+      if (status) status.hidden = true;
+      if (registerBtn) registerBtn.disabled = false;
+    }
+  });
+})();
+</script>
+{% endblock %}

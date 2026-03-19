@@ -1,8 +1,36 @@
 from django import forms
-from .models import Registration, TimeSlot
+from .models import Registration, TimeSlot, SimpleRegistration
 
-from django import forms
-from .models import Registration, TimeSlot
+class SimpleRegistrationForm(forms.ModelForm):
+    guests = forms.ChoiceField(
+        choices=[(1, "1"), (2, "2")],
+        initial=1,
+        required=True,
+        label="Guests",
+        widget=forms.Select()
+    )
+
+    prompt_answer = forms.CharField(
+        required=False,
+        max_length=1000, 
+        label="(Optional) Got a question of your own? Send in your question below and we'll try to answer it during the talk!",
+        widget=forms.Textarea(attrs={
+            "rows": 3,
+            "maxlength": 1000
+        })
+    )
+
+    class Meta:
+        model = SimpleRegistration
+        fields = ["name", "email", "guests", "prompt_answer"] 
+        widgets = {
+            "name": forms.TextInput(attrs={"autocomplete": "name"}),
+            "email": forms.EmailInput(attrs={"autocomplete": "email"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 
 class RegistrationForm(forms.ModelForm):
     guests = forms.ChoiceField(
